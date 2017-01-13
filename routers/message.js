@@ -12,7 +12,14 @@ router.use(bodyParser.urlencoded({
 router.get('/', function (req, res) {//路由攔劫~
     testRender(res);
 });
+router.get('*', function(req, res){
+    ErrorRender(res);
+});
 router.post('/send',function (req, res) {//發出訊息
+    var SendTo = req.body.SendTo;
+    if(SendTo == null){
+        SendTo = require("../config/CustomerService").AccountNO;//接待用帳號
+    }
     var DB = new Sql.DB();
     DB.insert([
         {
@@ -38,6 +45,22 @@ router.post('/send',function (req, res) {//發出訊息
         res.send("發送失敗");
     });
 });
+function ErrorRender(res) {//無畫面
+    res.render('layouts/error_layout', {
+        Title: "無法顯示頁面",
+        CSSs: [
+        ],
+        JavaScripts: [
+        ],
+        //為了傳送Value所以根目錄一樣是./views開始算
+        Include: [
+            
+        ],
+        Script: [	
+            
+        ]
+    });
+}
 //method
 function testRender(res) {
     res.render('layouts/login_layout', {

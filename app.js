@@ -19,10 +19,6 @@ app.use(express_session);
 app.use(cookieParser());
 app.use('/public', express.static(__dirname + '/public'));//開放資料
 //router init
-function getRouter(url) {
-    var router = require('./routers/' + url);
-    return router;
-}
 var Router = {
     login: getRouter("login"),
     message: getRouter("message")
@@ -33,4 +29,27 @@ app.get('/', function (req, res) {
 });
 app.use('/page', Router.message);
 app.use('/login', Router.login);
-
+app.get('*', function(req, res){
+    ErrorRender(res);
+}); 
+//method
+function getRouter(url) {
+    var router = require('./routers/' + url);
+    return router;
+}
+function ErrorRender(res) {//無畫面
+    res.render('layouts/error_layout', {
+        Title: "無法顯示頁面",
+        CSSs: [
+        ],
+        JavaScripts: [
+        ],
+        //為了傳送Value所以根目錄一樣是./views開始算
+        Include: [
+            
+        ],
+        Script: [	
+            
+        ]
+    });
+}

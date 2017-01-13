@@ -12,6 +12,7 @@ router.use(bodyParser.urlencoded({
 router.get('/', function (req, res) {//路由攔劫~
     loginRender(res);
 });
+
 /**
  * 登入
  * @param {string} Account   : 使用者帳號(UA01)
@@ -123,6 +124,9 @@ router.post("/logout", function(req, res) {
     if(req.session._admin != null) delete req.session._admin;
     res.redirect('/login');
 });
+router.get('*', function (req, res) {//404~
+    ErrorRender(res);
+});
 //method
 function loginRender(res) {
     res.render('layouts/login_layout', {//因為前面在app.js有設定views的root資料夾在./views所以這邊路徑是從./views開始算
@@ -144,6 +148,22 @@ function loginRender(res) {
         ],
         Script: [	
             { url: "../script/login", value: {} }
+        ]
+    });
+}
+function ErrorRender(res) {//無畫面
+    res.render('layouts/error_layout', {
+        Title: "無法顯示頁面",
+        CSSs: [
+        ],
+        JavaScripts: [
+        ],
+        //為了傳送Value所以根目錄一樣是./views開始算
+        Include: [
+            
+        ],
+        Script: [	
+            
         ]
     });
 }
