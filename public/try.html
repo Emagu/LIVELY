@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Simple markers</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+	  #pac-input {
+	  background-color: #fff;
+	  font-family: Roboto;
+	  font-size: 15px;
+	  font-weight: 300;
+	  margin-left: 12px;
+	  padding: 0 11px 0 13px;
+	  text-overflow: ellipsis;
+	  width: 300px;
+	}
+
+	#pac-input:focus {
+	  border-color: #4d90fe;
+	}
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+	<input id="pac-input" class="controls" type="text"
+        placeholder="輸入地址">
+    <script>
+	//預設(搜尋的座標)
+	function initMap() {
+		//經緯度
+		var myLatLng = {lat: 25.0439892, lng: 121.5212213};
+		//center:地圖中心(經緯度)、zoom:縮放(數值越大可看到路名)
+		var map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 18,
+			center: myLatLng
+		});
+		//紅色小指標
+		//var image = '紅色小指標圖檔放置位置';
+		var marker = new google.maps.Marker({
+			position: myLatLng,
+			map: map,
+			title: 'Hello World!'//顯示地址/相關資訊
+			//icon: image
+		});
+		//顯示地址/相關資訊
+		var contentString = '相關資訊(地址/電話/機構名稱...)'
+		var infowindow = new google.maps.InfoWindow({
+			content: contentString
+		});
+		marker.addListener('click', function() {
+			infowindow.open(map, marker);
+		});
+		
+		//搜尋功能
+		var input = /** @type {!HTMLInputElement} */(
+		document.getElementById('pac-input'));
+		var autocomplete = new google.maps.places.Autocomplete(input);
+		autocomplete.bindTo('bounds', map);
+		autocomplete.addListener('place_changed', function() {
+		infowindow.close();
+		marker.setVisible(false);
+		//搜尋地址變更+正規化
+		var place = autocomplete.getPlace();
+		if (!place.geometry) {
+		  window.alert("請確定地址是否輸入正確");
+		  return;
+		}
+		//地址正確
+		if (place.geometry.viewport) {
+		  map.fitBounds(place.geometry.viewport);
+		} else {
+		  map.setCenter(place.geometry.location);
+		  map.setZoom(17);  // 一次顯示的可能地址數量
+		}
+		marker.setPosition(place.geometry.location);
+		marker.setVisible(true);
+
+		var address = '';
+		//OR搜尋，可用空格隔開
+		if (place.address_components) {
+		  address = [
+			(place.address_components[0] && place.address_components[0].short_name || ''),
+			(place.address_components[1] && place.address_components[1].short_name || ''),
+			(place.address_components[2] && place.address_components[2].short_name || '')
+		  ].join(' ');
+		}
+
+		infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+		infowindow.open(map, marker);
+	  });
+	}
+	
+	/*
+	//顯示附近的機構標上marker
+	var labelIndex = 1;
+	function nearhome(location,map){
+		var marker = new google.maps.Marker({
+		position: location,
+		label: labelIndex++,
+		map: map
+	    });
+	}
+	*/
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb-vpPQsO-4-jBiSPMK8_EAEKTCo0XwZo&signed_in=true&callback=initMap&libraries=places"></script>
+  </body>
+</html>

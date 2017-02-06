@@ -3,12 +3,16 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var Sql = require("../lib/MySQL_X");
 var Tool = require("../lib/tool");
+var AccountLib = require("../lib/Account");
 var router = express.Router();
 router.use(bodyParser.json());       // to support JSON-encoded bodies
 router.use(bodyParser.urlencoded({
     // to support URL-encoded bodies
     extended: true
 }));
+router.use(function(req, res, next) {//權限認證
+  AccountLib.checkLogin(req.session).then(next,AccountLib.logout);    
+});
 router.get('/', function (req, res) {//路由攔劫~
     testRender(res);
 });

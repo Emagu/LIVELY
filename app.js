@@ -33,7 +33,7 @@ app.get('*', function(req, res){
     ErrorRender(res);
 }); 
 //method
-function getRouter(url) {
+function getRouter(url) {//他會匯入檔案
     var router = require('./routers/' + url);
     return router;
 }

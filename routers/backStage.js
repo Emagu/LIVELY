@@ -4,14 +4,63 @@ var bodyParser = require('body-parser');
 var router = express.Router();
 var Sql = require("../lib/MySQL_X");
 var Tool = require("../lib/tool");
+var AccountLib = require("../lib/Account");
 router.use(bodyParser.json());       // to support JSON-encoded bodies
 router.use(bodyParser.urlencoded({
      // to support URL-encoded bodies
     extended: true
 }));
-router.get('/', function (req, res) {//路由攔劫~
+router.use(function(req, res, next) {//權限認證
+  AccountLib.checkLogin(req.session).then(next,AccountLib.logout);    
+});
+router.get('/', function (req, res) {
     console.log(req.session);
     //Render(res);
+});
+
+/**
+ * 新增機構
+ * @param {string} Name         : 訊息
+ * @param {string} CityNo       : 縣市編號
+ * @param {string} TownShipNO   : 鄉鎮編號
+ * @param {string} Address      : 地址
+ * @param {string} GovernmentNo : 政府編號
+ * @param {string} Phone        : 電話
+ * @param {string} Fax          : 傳真
+ * --------------------------------------------
+ * 回傳值
+ * @status {string} "success"
+ * @status {string} 各類錯誤訊息
+ **/
+router.post('/newFirm',function(req, res){
+    if(req.session._admin == null){
+        res.send("未登入");
+    }else if(req.body.Message == null){
+        res.send("空訊息");
+    }else if(req.body.firmNO == null){
+        res.send("空機構");
+    }else{
+        var db = new Sql.DB();
+        var newData = [
+            {
+                key:"UA00A",
+                value:req.session._admin.userNO
+            },{
+                key:"F00",
+                value:req.body.firmNO
+            },{
+                key:"GB01",
+                value:req.body.Message,
+                type:"ENCRYPT"
+            }
+        ];
+        db.insert(newData,'GuestBook').then(function(data){
+            res.send("success");
+        },function(err) {
+            console.log(err);
+            res.send("留言失敗");
+        });
+    }
 });
 router.get('*', function (req, res) {//404~
     ErrorRender(res);

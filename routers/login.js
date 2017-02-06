@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var router = express.Router();
 var Sql = require("../lib/MySQL_X");
 var Tool = require("../lib/tool");
+var AccountLib = require("../lib/Account");
 router.use(bodyParser.json());       // to support JSON-encoded bodies
 router.use(bodyParser.urlencoded({
      // to support URL-encoded bodies
@@ -12,7 +13,6 @@ router.use(bodyParser.urlencoded({
 router.get('/', function (req, res) {//路由攔劫~
     loginRender(res);
 });
-
 /**
  * 登入
  * @param {string} Account   : 使用者帳號(UA01)
@@ -25,8 +25,7 @@ router.get('/', function (req, res) {//路由攔劫~
 router.post("/login", function (req, res) {
     var DB = new Sql.DB();
     DB.select("UA00",'DEFAULT','userNO');
-    DB.select("UA01",'DECRYPT','userID');
-    DB.select("UA05",'DECRYPT','userName');
+    DB.select("UA01",'DEFAULT','userID');
     DB.select("UA001");
     DB.where("UA01",req.body.Account.trim(),"=","AND","ENCRYPT");
     DB.where("UA02",req.body.Password.trim(),"=","AND","HASH");
@@ -38,20 +37,19 @@ router.post("/login", function (req, res) {
         } else {//登入成功
             DB = new Sql.DB();
             DB.where("UA00",resultData[0].userNO.toString());
-            DB.update([
-                {
+            DB.update(
+                [{
                     key:"UA001",
                     value:Tool.getTimeZone()
-                }
-            ],"UserAccount").then(function(){
+                }]
+            ,"UserAccount").then(function(){
                 console.log("success");
             },function(err){
                 console.log(err);
             });
             req.session._admin = {
                 userNO: resultData[0].userNO,
-                userID: resultData[0].userID,
-                userName: resultData[0].userName
+                userID: resultData[0].userID
             };
             req.session.save();
             res.send("secces");
@@ -109,21 +107,13 @@ router.post("/register", function (req, res) {
         ];
         db.insert(newData,'UserAccount').then(function(data){
             res.send("success");
-        },function error(msg) {
-            console.log(msg);
+        },function(err) {
+            console.log(err);
             res.send("註冊失敗");
         });
     }
 });
-/**
- * 登出
- * ----------------------------
- * 重新導向登入畫面
- **/
-router.post("/logout", function(req, res) {
-    if(req.session._admin != null) delete req.session._admin;
-    res.redirect('/login');
-});
+router.post("/logout", AccountLib.logout);
 router.get('*', function (req, res) {//404~
     ErrorRender(res);
 });
