@@ -83,6 +83,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-.ntvs_analysis.dat
-bin/www
-lively.njsproj
