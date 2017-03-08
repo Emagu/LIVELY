@@ -11,7 +11,8 @@ router.use(bodyParser.urlencoded({
     extended: true
 }));
 router.use(function(req, res, next) {//權限認證
-  AccountLib.checkLoginBySession(req.session).then(next,AccountLib.logout);    
+  if(req.session._admin != null)  AccountLib.checkLoginBySession(req.session._admin).then(next,AccountLib.logout);  
+  else res.redirect('/login');
 });
 router.get('/', function (req, res) {
     if(req.query.NO==null){
