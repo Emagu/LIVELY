@@ -1,0 +1,12 @@
+<% value.forEach(function(firm){ %>
+    <li><a href="/firm?NO=<%= firm.NO%>"><%= firm.Name%></a><button onclick="edit(<%= firm.NO%>)">編輯</button><button onclick="delete(<%= firm.NO%>)">刪除</button></li>
+<% }); %>
+<button onclick="newFirm()">新增</button>
+<script>
+    function newFirm(){
+        location.href = "/firmManger/firmEdit?action=0";
+    }
+    function edit(no){
+        location.href = "/firmManger/firmEdit?action=1&NO="+no;
+    }
+</script>

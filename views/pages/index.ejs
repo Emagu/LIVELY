@@ -1,0 +1,655 @@
+<link rel="stylesheet" type="text/css" href="/public/css/style.css" />
+<script src="/public/js/modernizr.custom.97074.js"></script>
+<noscript><link rel="stylesheet" type="text/css" href="/public/css/noJS.css"/></noscript>
+<script type="text/javascript" src="/public/js/jquery.hoverdir.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(' #da-thumbs > li ').each(function() {
+            $(this).hoverdir();
+        });
+    });
+</script>
+<style>
+    #wrap_banner {
+        position: relative;
+        width: 100%;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        //background: #FFF2CF url(images/img01.png) repeat;
+        //background:#F7E0A6;
+        background: #fcf5c7;
+    }
+    
+    #wrap_banner_title {
+        position: relative;
+        width: 100%;
+        font-size: 18px;
+        font-family: '微軟正黑體';
+        letter-spacing: 2px;
+        color: #fff;
+        font-weight: 600;
+        text-align: center;
+        list-style-type: none;
+        padding-top: 25px;
+        padding-bottom: 25px;
+        margin-bottom: 50px;
+        //background:#AD3E43;
+        background: #ff686b;
+    }
+    
+    #wrap_banner img {
+        width: 70%;
+        margin-left: 15%;
+    }
+    
+    #part_search_banner {
+        overflow: hidden;
+        margin: 3em 0em;
+        background: url(images/img02.jpg) repeat-x left bottom;
+        position: relative;
+    }
+    
+    #part_search_banner .container {
+        margin-bottom: 3em;
+        //background: #B1DDDD url(images/img02.png) repeat;
+    }
+    
+    #part_search_banner a img {
+        display: block;
+        width: 100%;
+    }
+    
+    #part_search {
+        overflow: hidden;
+        background: #a0ced9;
+    }
+    
+    #part_search_title {
+        background: #fcf5c7;
+        padding-top: 5px;
+        padding-bottom: 10px;
+    }
+    
+    #part_search .title {
+        font-size: 20px;
+        font-family: '微軟正黑體';
+        letter-spacing: 2px;
+        font-weight: 600;
+        text-align: center;
+        list-style-type: none;
+    }
+    
+    #part_search .subtitle {
+        font-family: "微軟正黑體", serif;
+        font-style: italic;
+        font-weight: bold;
+    }
+    
+    #part_search a img {
+        display: block;
+        width: 90%;
+        margin-left: 5%;
+    }
+    
+    #searchbox {
+        position: absolute;
+        width: 20%;
+        margin-left: 58%;
+        margin-top: 12.3em;
+        border-width: 2px;
+        border-style: dashed;
+        padding: 0.5em;
+        border-color: #6C6C6C;
+    }
+    
+    #part_search .container {
+        position: relative;
+    }
+    
+    #part_search_banner a #searchicon {
+        position: absolute;
+        margin-left: 80%;
+        width: 5%;
+        margin-top: 12em;
+        opacity: 1;
+    }
+    
+    #part_search_banner a #searchicon:hover {
+        animation: opacityto0 1s;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+    }
+    
+    #part_search_banner a #searchicon_hover {
+        position: absolute;
+        margin-left: 80%;
+        width: 5%;
+        margin-top: 12em;
+        opacity: 0;
+    }
+    
+    #part_search_banner a #searchicon_hover:hover {
+        position: absolute;
+        margin-left: 80%;
+        width: 5%;
+        margin-top: 12em;
+        animation: opacityto1 1s;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+    }
+    
+    #search_category_box {
+        position: absolute;
+        width: 33%;
+        margin-left: 55%;
+        margin-top: 18em;
+        font-family: "微軟正黑體", serif;
+        font-weight: bold;
+        line-height: 1;
+        font-size: 14px;
+    }
+    
+    #search_category_box div {
+        position: relative;
+        width: 33%;
+        float: left;
+        text-align: center;
+    }
+    
+    #search_category_box div li {
+        width: 100%;
+        float: left;
+        margin-top: 1.3em;
+        list-style-type: none;
+        text-shadow: 0px 0px 0px black;
+        font-size: 1.1em;
+    }
+    
+    #search_category_box div li:hover {
+        animation: searchtext 1s;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+    }
+    
+    @keyframes opacityto0 {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+    
+    @keyframes opacityto1 {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes searchtext {
+        to {
+            color: white;
+            text-shadow: 2px 2px 2px black;
+        }
+    }
+    /* cooperation */
+    
+    #part_cooperation_banner {
+        overflow: hidden;
+        margin: 3em 0em;
+        background: url(images/img02.jpg) repeat-x left bottom;
+        position: relative;
+    }
+    
+    #part_cooperation_banner .container {
+        margin-bottom: 3em;
+        //background: #B1DDDD url(images/img02.png) repeat;
+    }
+    
+    #part_cooperation_banner a img {
+        display: block;
+        width: 100%;
+    }
+    
+    #part_cooperation {
+        overflow: hidden;
+        background: #adf7b6;
+    }
+    
+    #part_cooperation .container section {
+        position: absolute;
+        margin-top: 20%;
+    }
+    
+    #part_cooperation_title {
+        background: #a0ced9;
+        padding-top: 5px;
+        padding-bottom: 10px;
+    }
+    
+    #part_cooperation .title {
+        font-size: 20px;
+        font-family: '微軟正黑體';
+        letter-spacing: 2px;
+        font-weight: 600;
+        text-align: center;
+        list-style-type: none;
+        color: white;
+    }
+    
+    #part_cooperation .subtitle {
+        font-family: "微軟正黑體", serif;
+        font-style: italic;
+        font-weight: bold;
+        color: white;
+    }
+    
+    #part_cooperation a img {
+        display: block;
+        width: 100%;
+    }
+    
+    #cooperation_category_box {
+        position: absolute;
+        width: 100%;
+        margin-top: 22em;
+        font-family: "微軟正黑體", serif;
+        font-weight: bold;
+        padding-left: 10%;
+    }
+    
+    #cooperation_category_box span {
+        position: relative;
+        width: 20%;
+        height: 100px;
+        margin-left: 2%;
+        float: left;
+        text-align: center;
+    }
+    
+    #partner_1 {
+        position: relative;
+        width: 45%;
+        height: 100px;
+        float: left;
+        background: #FFF2CF url(images/img01.png) repeat;
+        box-shadow: -2px 2px 2px black;
+    }
+    
+    #partner_2 {
+        position: relative;
+        width: 45%;
+        height: 100px;
+        margin-left: 10%;
+        float: left;
+        background: #FFF2CF url(images/img04.png) repeat;
+        box-shadow: -2px 2px 2px black;
+    }
+    
+    #partner_3 {
+        position: relative;
+        width: 100%;
+        height: 100px;
+        margin-top: 1.5em;
+        float: left;
+        background: #FFF2CF url(images/img01.png) repeat;
+        box-shadow: -2px 2px 2px black;
+    }
+    
+    #partner_4 {
+        position: relative;
+        width: 70%;
+        height: 100px;
+        margin-top: 1.5em;
+        margin-left: 30%;
+        float: left;
+        background: #FFF2CF url(images/img04.png) repeat;
+        box-shadow: -2px 2px 2px black;
+    }
+    
+    #partner_6 {
+        position: relative;
+        width: 80%;
+        height: 160px;
+        margin-left: 20%;
+        float: left;
+        background: #FFF2CF url(images/img01.png) repeat;
+        box-shadow: -2px 2px 2px black;
+    }
+    
+    #partner_7 {
+        position: relative;
+        width: 45%;
+        height: 100px;
+        margin-top: 1.5em;
+        float: left;
+        background: #FFF2CF url(images/img01.png) repeat;
+        box-shadow: -2px 2px 2px black;
+    }
+    
+    #partner_8 {
+        position: relative;
+        width: 45%;
+        height: 180px;
+        margin-top: 1.5em;
+        margin-left: 10%;
+        float: left;
+        background: #FFF2CF url(images/img04.png) repeat;
+        box-shadow: -2px 2px 2px black;
+    }
+    
+    #partner_11 {
+        position: relative;
+        width: 90%;
+        height: 180px;
+        float: left;
+        background: #FFF2CF url(images/img01.png) repeat;
+        box-shadow: 2px 2px 2px black;
+    }
+    
+    #partner_12 {
+        position: relative;
+        width: 70%;
+        height: 140px;
+        margin-top: 1.5em;
+        float: left;
+        background: #FFF2CF url(images/img01.png) repeat;
+        box-shadow: 2px 2px 2px black;
+    }
+    
+    #partner_16 {
+        position: relative;
+        width: 35%;
+        height: 80px;
+        float: left;
+        background: #FFF2CF url(images/img04.png) repeat;
+        box-shadow: 2px 2px 2px black;
+    }
+    
+    #partner_17 {
+        position: relative;
+        width: 55%;
+        height: 80px;
+        margin-left: 10%;
+        float: left;
+        background: #FFF2CF url(images/img01.png) repeat;
+        box-shadow: 2px 2px 2px black;
+    }
+    
+    #partner_18 {
+        position: relative;
+        width: 70%;
+        height: 150px;
+        margin-top: 1.5em;
+        float: left;
+        background: #FFF2CF url(images/img01.png) repeat;
+        box-shadow: 2px 2px 2px black;
+    }
+    
+    #partner_19 {
+        position: relative;
+        width: 45%;
+        height: 80px;
+        margin-top: 1.5em;
+        float: left;
+        background: #FFF2CF url(images/img01.png) repeat;
+        box-shadow: 2px 2px 2px black;
+    }
+    
+    #partner_1:hover,
+    #partner_2:hover,
+    #partner_3:hover,
+    #partner_4:hover,
+    #partner_5:hover,
+    #partner_6:hover,
+    #partner_7:hover,
+    #partner_8:hover,
+    #partner_9:hover,
+    #partner_10:hover,
+    #partner_11:hover,
+    #partner_12:hover,
+    #partner_13:hover,
+    #partner_14:hover,
+    #partner_15:hover,
+    #partner_16:hover,
+    #partner_17:hover,
+    #partner_18:hover,
+    #partner_19:hover,
+    #partner_20:hover {
+        animation: partnerchange 0.5s;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+    }
+    
+    @keyframes partnerchange {
+        to {
+            transform: rotate(360deg);
+            border-radius: 20px;
+        }
+    }
+    /* future */
+    
+    #part_future_banner {
+        overflow: hidden;
+        margin: 3em 0em;
+        background: url(images/img02.jpg) repeat-x left bottom;
+        position: relative;
+    }
+    
+    #part_future_banner .container {
+        margin-bottom: 3em;
+        //background: #B1DDDD url(images/img02.png) repeat;
+    }
+    
+    #part_future_banner a img {
+        display: block;
+        width: 100%;
+    }
+    
+    #part_future {
+        overflow: hidden;
+        background: #f7bc9d;
+    }
+    
+    #part_future_title {
+        background: #adf7b6;
+        padding-top: 5px;
+        padding-bottom: 10px;
+    }
+    
+    #part_future .title {
+        font-size: 20px;
+        font-family: '微軟正黑體';
+        letter-spacing: 2px;
+        font-weight: 600;
+        text-align: center;
+        list-style-type: none;
+    }
+    
+    #part_future .subtitle {
+        font-family: "微軟正黑體", serif;
+        font-style: italic;
+        font-weight: bold;
+    }
+    
+    #part_future a img {
+        display: block;
+        width: 100%;
+        background: #FFF2CF url(images/img01.png) repeat;
+    }
+    
+    #part_cooperation .container {
+        position: relative;
+    }
+</style>
+<div id="wrap_banner">
+    <div id="wrap_banner_title">
+        LIVELY，給家人最安心的照護。
+    </div>
+    <img src="/public/images/banner.png">
+</div>
+<div class="index_section" id="part_search">
+    <div class="row">
+        <div id="part_search_banner" class="12u">
+            <div id="part_search_title">
+                <center>
+                    <h2 class="title">搜尋機構</h2>
+                </center>
+                <center>
+                    <p class="subtitle">開始搜尋最適合的安養機構，給您滿滿的溫暖。</p>
+                </center>
+            </div>
+            <div class="container">
+                <input id="searchbox" type="text" name="searchtext">
+                <a>
+                    <img id="searchicon" src="/public/images/searchicon.png">
+                </a>
+                <a href="#">
+                    <img id="searchicon_hover" src="/public/images/searchiconhover.png">
+                </a>
+                <div id="search_category_box">
+                    <div>
+                        <a href="#">
+                            <li>臺北市</li>
+                        </a>
+                        <a href="#">
+                            <li>新北市</li>
+                        </a>
+                        <a href="#">
+                            <li>基隆市</li>
+                        </a>
+                        <a href="#">
+                            <li>新竹市</li>
+                        </a>
+                        <a href="#">
+                            <li>高雄市</li>
+                        </a>
+                        <a href="#">
+                            <li>花蓮市</li>
+                        </a>
+                        <a href="#">
+                            <li>雲林市</li>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="#">
+                            <li>宜蘭縣</li>
+                        </a>
+                        <a href="#">
+                            <li>嘉義縣</li>
+                        </a>
+                        <a href="#">
+                            <li>桃園市</li>
+                        </a>
+                        <a href="#">
+                            <li>苗栗縣</li>
+                        </a>
+                        <a href="#">
+                            <li>屏東縣</li>
+                        </a>
+                        <a href="#">
+                            <li>南投縣</li>
+                        </a>
+                        <a href="#">
+                            <li>澎湖縣</li>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="#">
+                            <li>臺中市</li>
+                        </a>
+                        <a href="#">
+                            <li>嘉義市</li>
+                        </a>
+                        <a href="#">
+                            <li>新竹縣</li>
+                        </a>
+                        <a href="#">
+                            <li>臺南市</li>
+                        </a>
+                        <a href="#">
+                            <li>臺東縣</li>
+                        </a>
+                        <a href="#">
+                            <li>彰化縣</li>
+                        </a>
+                    </div>
+                </div>
+                <a>
+                    <img src="/public/images/search.png" alt="">
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="index_section" id="part_future">
+    <div class="row">
+        <div id="part_future_banner" class="12u">
+            <div id="part_future_title">
+                <center>
+                    <h2 class="title">未來展望</h2>
+                </center>
+                <center>
+                    <p class="subtitle">沒有最好，只有更好</p>
+                </center>
+            </div>
+            <div class="container">
+                <a>
+                    <img src="/public/images/future.png">
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container" id="page">
+    <div class="row">
+        <div class="6u">
+            <div class="mobileUI-main-content" id="content">
+                <section>
+                    <div class="post">
+                        <center>
+                            <h2>打開窗，讓思念翱翔</h2>
+                        </center>
+                        <br>
+                        <br>
+                        <a href="#"><img src="/public/images/window.png" alt=""></a>
+                        <br>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div class="4u -1u" id="sidebar1">
+            <section>
+                <center>
+                    <h2>其他窗口</h2>
+                </center>
+                <ul class="style2">
+                    <li class="first">
+                        <p>
+                            <a href="#"><img src="/public/images/twitter.png" alt="">詳細內容文字，詳細內容文字，詳細內容文字，詳細內容文字。</a>
+                        </p><br>
+                    </li>
+                    <li>
+                        <p>
+                            <a href="#"><img src="/public/images/youtube.png" alt="">詳細內容文字，詳細內容文字，詳細內容文字，詳細內容文字。</a>
+                        </p><br>
+                    </li>
+                    <li>
+                        <p>
+                            <a href="#"><img src="/public/images/skype.png" alt="">詳細內容文字，詳細內容文字，詳細內容文字，詳細內容文字。</a>
+                        </p><br>
+                    </li>
+                    <li>
+                        <p>
+                            <a href="#"><img src="/public/images/paypal.png" alt="">詳細內容文字，詳細內容文字，詳細內容文字，詳細內容文字。</a>
+                        </p><br>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </div>
+</div>

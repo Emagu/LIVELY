@@ -1,0 +1,62 @@
+政府登記編號:<input type="text" id="firm_no" value="<%= value.no%>"/><br/>
+名稱:<input type="text" id="firm_title" value="<%= value.title%>"/><br/>
+地址(縣市):<input type="text" id="firm_city" value="<%= value.city%>"/><br/>
+地址(鄉鎮):<input type="text" id="firm_country" value="<%= value.ctry%>"/><br/>
+地址(結尾):<input type="text" id="firm_address" value="<%= value.addr%>"/><br/>
+市話:<input type="text" id="firm_phone" value="<%= value.phone%>"/><br/>
+傳真:<input type="text" id="firm_fax" value="<%= value.fax%>"/><br/>
+<textarea id="editer_area"></textarea>
+<button onclick="preview()">預覽</button><br />
+<script>
+    $(document).ready(function(){
+        $("#editer_area").html(decodeURIComponent("<%= value.html%>"));
+        editerInit();
+    });
+    function editerInit(){
+        tinymce.init({
+            selector: 'textarea',
+            height: 500,
+            menubar: false,
+            plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table contextmenu paste code'
+            ],
+            automatic_uploads: true,
+            images_upload_url: '/firmManger/uploadNewsImage',
+            file_picker_types: 'image', 
+            file_picker_callback: function(cb, value, meta) {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                input.onchange = function() {
+                    var file = this.files[0];
+                    var id = 'blobid' + (new Date()).getTime();
+                    var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                    var blobInfo = blobCache.create(id, file);
+                    blobCache.add(blobInfo);
+                    cb(blobInfo.blobUri(), { title: file.name });
+                };
+                input.click();
+            },
+            resize: false,
+            language: 'zh_TW',
+            toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+            content_css: '//www.tinymce.com/css/codepen.min.css'
+        });
+    }
+    function preview() {
+        var html = encodeURIComponent(encodeURIComponent(tinymce.activeEditor.getContent()));
+        console.log(html);
+        location.href = "./preview?" + "title=" + $("#firm_title").val()
+            + "&no=" + $("#firm_no").val()
+            + "&city=" + $("#firm_city").val()
+            + "&ctry=" + $("#firm_country").val()
+            + "&addr=" + $("#firm_address").val()
+            + "&phone=" + $("#firm_phone").val()
+            + "&fax=" + $("#firm_fax").val()
+            + "&html=" + html
+            + "&action=<%= value.action%>";
+    }
+    
+</script>

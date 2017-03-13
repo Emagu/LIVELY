@@ -20,15 +20,19 @@ app.use(cookieParser());
 app.use('/public', express.static(__dirname + '/public'));//開放資料
 //router init
 var Router = {
-    login: getRouter("login"),
-    message: getRouter("message")
+    index: getRouter("index"),
+    message: getRouter("message"),
+    firmManger: getRouter("firmManger"),
+    firm: getRouter("firm")
 };
 //設定router
-app.get('/', function (req, res) {
-    res.redirect('/login');//後端控制前端跳轉路由
+app.get('/',function(req, res) {
+   res.redirect('/front');
 });
+app.use('/front', Router.index);
 app.use('/page', Router.message);
-app.use('/login', Router.login);
+app.use('/firmManger', Router.firmManger);
+app.use('/firm', Router.firm);
 app.get('*', function(req, res){
     ErrorRender(res);
 }); 

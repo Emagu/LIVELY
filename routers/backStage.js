@@ -90,7 +90,7 @@ function ClientRender(res) {//一般使用者
         ]
     });
 }
-function MangerRender(res) {//一般使用者
+function MangerRender(res) {
     res.render('layouts/firm_layout', {//因為前面在app.js有設定views的root資料夾在./views所以這邊路徑是從./views開始算
         /*
          * 參數資料從server根目錄開始算

@@ -1,6 +1,12 @@
-機構名稱:<%= value.Name %><br>
-機構所在縣市編號:<%= value.CountyNo %><br>
-機構所在鄉鎮編號:<%= value.TownshipNo %><br>
-機構地址:<%= value.Address %><br>
-機構市話:<%= value.Telephone %><br>
-機構傳真:<%= value.Fax %><br>
+機構編號:<%= value.no %><br>
+機構名稱:<%= value.title %><br>
+機構所在縣市編號:<%= value.city %><br>
+機構所在鄉鎮編號:<%= value.ctry %><br>
+機構地址:<%= value.addr %><br>
+機構市話:<%= value.phone %><br>
+機構傳真:<%= value.fax %><br>
+<div id="firmView">
+</div>
+<script>
+     $("#firmView").html(decodeURIComponent('<%= value.html %>'));
+</script>

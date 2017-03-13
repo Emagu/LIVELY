@@ -1,0 +1,29 @@
+機構編號:<%= value.no %><br>
+機構名稱:<%= value.title %><br>
+機構所在縣市編號:<%= value.city %><br>
+機構所在鄉鎮編號:<%= value.ctry %><br>
+機構地址:<%= value.addr %><br>
+機構市話:<%= value.phone %><br>
+機構傳真:<%= value.fax %><br>
+<div id="firmView">
+</div>
+<button onclick="editSumit()">確認</button>
+<button onclick="history.go(-1)">返回</button>
+<script>
+     $("#firmView").html(decodeURIComponent('<%= value.html %>'));
+     function editSumit() {
+        $.post('/firmManger/editSumit', {
+            no: "<%= value.no%>",
+            title: "<%= value.title%>",
+            city: "<%= value.city%>",
+            ctry: "<%= value.ctry%>",
+            addr: "<%= value.addr%>",
+            phone: "<%= value.phone%>",
+            fax: "<%= value.fax%>",
+            html: "<%=value.html%>",
+            action: '<%= value.action%>'
+        }, function (status) {
+            if (status == "success") location.href = "./";
+        });
+    }
+</script>
