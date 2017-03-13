@@ -212,7 +212,8 @@ function EditRender(res,firm) {
         CSSs: [
         ],
         JavaScripts: [
-            "/public/js/tinymce/tinymce.min.js"
+            "/public/js/tinymce/tinymce.min.js",
+            "/public/js/Taiwan_Administrative_Region.js"
         ],
         Include: [
             {url:"../pages/firmEdit",value:firm}
@@ -230,7 +231,7 @@ function PreviewRender(res,firm){
             
         ],
         JavaScripts: [
-            
+            "/public/js/Taiwan_Administrative_Region.js"
         ],
         Include: [
             { url: "../pages/firmPre", value: firm }

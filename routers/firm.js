@@ -163,7 +163,7 @@ function Render(res,login,firm) {
             
         ],
         JavaScripts: [
-            
+            "/public/js/Taiwan_Administrative_Region.js"
         ],
         Include: [
             { url: "../pages/firm", value: firm }

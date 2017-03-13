@@ -1,7 +1,7 @@
 政府登記編號:<input type="text" id="firm_no" value="<%= value.no%>"/><br/>
 名稱:<input type="text" id="firm_title" value="<%= value.title%>"/><br/>
-地址(縣市):<input type="text" id="firm_city" value="<%= value.city%>"/><br/>
-地址(鄉鎮):<input type="text" id="firm_country" value="<%= value.ctry%>"/><br/>
+地址(縣市):<select id="firm_city"></select><br/>
+地址(鄉鎮):<select id="firm_country"></select><br/>
 地址(結尾):<input type="text" id="firm_address" value="<%= value.addr%>"/><br/>
 市話:<input type="text" id="firm_phone" value="<%= value.phone%>"/><br/>
 傳真:<input type="text" id="firm_fax" value="<%= value.fax%>"/><br/>
@@ -11,6 +11,20 @@
     $(document).ready(function(){
         $("#editer_area").html(decodeURIComponent("<%= value.html%>"));
         editerInit();
+        //縣市選擇
+        TAR.getCitys().forEach(function(cityValue,index){
+            $("#firm_city").append("<option value='"+index+"'>"+cityValue+"</option>");
+        });
+        //鄉鎮隨縣市變換而改變
+        $("#firm_city").change(function(){
+            $("#firm_country").empty();
+            TAR.getCountrys($("#firm_city").val()).forEach(function(countryValue,index){
+                $("#firm_country").append("<option value='"+index+"'>"+countryValue+"</option>");
+            });
+        });
+        //預設值
+        $("#firm_city").val(<%= value.city%>).change();
+        $("#firm_country").val(<%= value.ctry%>).change();
     });
     function editerInit(){
         tinymce.init({
@@ -47,7 +61,6 @@
     }
     function preview() {
         var html = encodeURIComponent(encodeURIComponent(tinymce.activeEditor.getContent()));
-        console.log(html);
         location.href = "./preview?" + "title=" + $("#firm_title").val()
             + "&no=" + $("#firm_no").val()
             + "&city=" + $("#firm_city").val()
