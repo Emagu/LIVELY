@@ -1,6 +1,7 @@
 'use strict';
 const express = require('express');
 const bodyParser = require('body-parser');
+const promise = require("promise");
 const router = express.Router();
 const Sql = require("../lib/MySQL_X");
 const Tool = require("../lib/tool");
@@ -32,33 +33,64 @@ router.get('/', function (req, res) {
     if(req.query.NO==null){
         ErrorRender(res);
     }else{
-        let DB = new Sql.DB();
-        DB.select("F01","DECRYPT","no");
-        DB.select("F02","DECRYPT","title");
-        DB.select("F03A","DEFAULT","city");
-        DB.select("F03B","DEFAULT","ctry");
-        DB.select("F03C","DECRYPT","addr");
-        DB.select("F04","DECRYPT","phone");
-        DB.select("F05","DECRYPT","fax");
-        DB.where("F00",req.query.NO);
-        DB.get("Firm").then(function(resultData){
-            if(resultData.length<=0){
-                ErrorRender(req,res);
-            }else{
-                fs.readFile('./html/firm/'+resultData[0].no+'.txt',function(err,data){
-                    if(err) {
-                        console.error(err);
-                        ErrorRender(res);
-                    }else{
-                        resultData[0].html = data.toString();
-                        Render(res,req.session.isLogin,resultData[0]);
-                    }
-                });
-            }
+        promise.all([new promise(function(success,fail){//機構資料蒐尋
+            let DB = new Sql.DB();
+            DB.select("F00","DEFAULT","ID");
+            DB.select("F01","DECRYPT","no");
+            DB.select("F02","DECRYPT","title");
+            DB.select("F03A","DEFAULT","city");
+            DB.select("F03B","DEFAULT","ctry");
+            DB.select("F03C","DECRYPT","addr");
+            DB.select("F04","DECRYPT","phone");
+            DB.select("F05","DECRYPT","fax");
+            DB.where("F00",req.query.NO);
+            DB.get("Firm").then(function(resultData){
+                if(resultData.length<=0){
+                    ErrorRender(req,res);
+                }else{
+                    fs.readFile('./html/firm/'+resultData[0].no+'.txt',function(err,data){
+                        if(err) {
+                            console.error(err);
+                            fail();
+                        }else{
+                            resultData[0].html = data.toString();
+                            success(resultData[0]);
+                        }
+                    });
+                }
+            },function(err){
+                console.error(err);
+                fail();
+            });
+        }),
+        new promise(function(success,fail){//留言搜尋
+            let DB = new Sql.DB();
+            DB.select("UA05","DECRYPT","Name");
+            DB.select("GB01","DECRYPT","data");
+            DB.select("GB02","DECRYPT","reply");
+            DB.select("GB000","DEFAULT","time");
+            DB.select("GB001","DEFAULT","replyTime");
+            DB.join("UserAccount","UserAccount.UA00=GuestBook.UA00");
+            DB.where("F00",req.query.NO);
+            DB.where("GB003",0);
+            DB.get("GuestBook").then(function(resultData){
+                for(var i=0;i<resultData.length;i++){
+                    if(resultData[i].time!=null)  resultData[i].time = Tool.getTimeZone(null,null,resultData[i].time);
+                    if(resultData[i].replyTime!=null)  resultData[i].replyTime = Tool.getTimeZone(null,null,resultData[i].replyTime);
+                }
+                success(resultData);
+            },function(err){
+                console.error(err);
+                fail();
+            });
+        })
+        ]).then(function (resultArray) {
+            Render(res,req.session.isLogin,resultArray[0],resultArray[1]);
         },function(err){
             console.error(err);
             ErrorRender(res);
         });
+        
     }
 });
 
@@ -71,7 +103,7 @@ router.get('/', function (req, res) {
  * @status {string} "success"
  * @status {string} 各類錯誤訊息
  **/
-router.post('/message',function(req, res){
+router.post('/commentSumit',function(req, res){
     if(req.session._admin == null){
         res.send("未登入");
     }else if(req.body.Message == null){
@@ -87,7 +119,7 @@ router.post('/message',function(req, res){
                 var db = new Sql.DB();
                 var newData = [
                     {
-                		key:"UA00A",
+                		key:"UA00",
             		    value:req.session._admin.userNO
             	    },{
                 	    key:"F00",
@@ -95,7 +127,7 @@ router.post('/message',function(req, res){
             	    },{
                 		key:"GB01",
             		    value:req.body.Message,
-            		    type:"ENCRYPT"
+            		    action:"ENCRYPT"
             	    },{
                 	    key:"GB000",
             	        value:Tool.getTimeZone()
@@ -155,7 +187,7 @@ router.post('/reply',function(req, res){
 });
 router.get('*', ErrorRender);
 //method
-function Render(res,login,firm) {
+function Render(res,login,firm,guestBook) {
     res.render('layouts/front_layout', {
         Title: firm.title,
         Login: login,
@@ -166,9 +198,11 @@ function Render(res,login,firm) {
             "/public/js/Taiwan_Administrative_Region.js"
         ],
         Include: [
-            { url: "../pages/firm", value: firm }
-        ],
-        Script: [	
+            { url: "../pages/firm", value: {
+                                        firm:firm,
+                                        guestBook:guestBook
+                                    } 
+            }
         ]
     });
 }
@@ -181,9 +215,6 @@ function ErrorRender(req,res) {//無畫面
         ],
         //為了傳送Value所以根目錄一樣是./views開始算
         Include: [
-            
-        ],
-        Script: [	
             
         ]
     });

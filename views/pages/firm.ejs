@@ -1,16 +1,49 @@
-機構編號:<%= value.no %><br>
-機構名稱:<%= value.title %><br>
+機構編號:<%= value.firm.no %><br>
+機構名稱:<%= value.firm.title %><br>
 機構所在縣市:<a id="firm_city"></a><br>
 機構所在鄉鎮:<a id="firm_ctry"></a><br>
-機構地址:<%= value.addr %><br>
-機構市話:<%= value.phone %><br>
-機構傳真:<%= value.fax %><br>
-<div id="firmView">
+機構地址:<%= value.firm.addr %><br>
+機構市話:<%= value.firm.phone %><br>
+機構傳真:<%= value.firm.fax %><br>
+<div id="firmView"></div>
+<div id="guestBook" align='center'>
+    <div class="guestHead">
+        <h1>留言板</h1>
+    </div>
+    <% value.guestBook.forEach(function(gb){ %>
+        <% var data = gb.data.split("<br />")%>
+        <div class="guestFloor">
+            <p>留言者:<%= gb.Name%></p>
+            <p>留言時間:<%= gb.time%></p>
+            <div>內容:
+            <% data.forEach(function(line){%>
+                <%= line %><br/>
+            <% });%>
+            </div>
+        </div>
+    <% }); %>
+    <div class="guestComment">
+        <textarea id="CommentMessage" style="resize: none;overflow: auto;"rows="10" cols="50"></textarea>
+        <button onclick="commentSumit()">發送</button>
+    </div>
 </div>
 <script>
     $(document).ready(function(){
-        $("#firmView").html(decodeURIComponent('<%= value.html %>'));
-        $("#firm_city").html(TAR.getCity(<%= value.city %>));
-        $("#firm_ctry").html(TAR.getCountry(<%= value.city %>,<%= value.ctry %>));
-    });              
+        $("#firmView").html(decodeURIComponent('<%= value.firm.html %>'));
+        $("#firm_city").html(TAR.getCity(<%= value.firm.city %>));
+        $("#firm_ctry").html(TAR.getCountry(<%= value.firm.city %>,<%= value.firm.ctry %>));
+    });           
+    function commentSumit(){
+        $.post("/firm/commentSumit",{
+            Message:$("#CommentMessage").val().replace(/[\n\r]+/g,'<br />'),
+            firmNO:<%= value.firm.ID%>
+        },function(status){
+            if(status == "success") location.reload();
+            else toastr.error( '',status, {
+                    "positionClass": "toast-bottom-full-width",
+    				"timeOut": "3000",
+    				"closeButton": true
+    			});
+        },"html");
+    }
 </script>
