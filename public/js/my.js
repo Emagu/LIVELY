@@ -150,7 +150,9 @@ function SendRegisterData(){
 	}
 }
 function logout(){
-    $.post("/front/logout",{},location.reload,'json');
+    $.post("/front/logout",{},function(){
+        location.reload();
+    },'html');
 }
 function backstage(){
     //location.href="/backstage";

@@ -31,7 +31,7 @@ router.use(function(req, res, next) {//權限認證
 });
 router.get('/', function (req, res) {
     if(req.query.NO==null){
-        ErrorRender(res);
+        ErrorRender(req,res);
     }else{
         promise.all([new promise(function(success,fail){//機構資料蒐尋
             let DB = new Sql.DB();
@@ -65,6 +65,7 @@ router.get('/', function (req, res) {
         }),
         new promise(function(success,fail){//留言搜尋
             let DB = new Sql.DB();
+            DB.select("GB00","DEFAULT","NO");
             DB.select("UA05","DECRYPT","Name");
             DB.select("GB01","DECRYPT","data");
             DB.select("GB02","DECRYPT","reply");
@@ -85,7 +86,12 @@ router.get('/', function (req, res) {
             });
         })
         ]).then(function (resultArray) {
-            Render(res,req.session.isLogin,resultArray[0],resultArray[1]);
+            AccountLib.getAuthority(req.session._admin,"03").then(function(){
+                Render(res,req.session.isLogin,resultArray[0],resultArray[1],true);
+            },function(){
+                Render(res,req.session.isLogin,resultArray[0],resultArray[1],false);
+            });
+            
         },function(err){
             console.error(err);
             ErrorRender(res);
@@ -133,7 +139,10 @@ router.post('/commentSumit',function(req, res){
             	        value:Tool.getTimeZone()
             	    }
                 ];
-                db.insert(newData,'GuestBook').then(function(data){
+                db.insert(newData,'GuestBook', {
+                    userNO: req.session._admin.userNO,
+                    IP: req.headers['x-forwarded-for'] || req.connection.remoteAddress
+                }, 5).then(function(data){
                     res.send("success");
                 },function(err) {
                     console.log(err);
@@ -162,32 +171,65 @@ router.post('/reply',function(req, res){
     }else if(req.body.GusetBookNO == null){
         res.send("空留言");
     }else{
-        var DB = new Sql.DB();
-        var updateData = [
-            {
-                key:"UA00B",
-                value:req.session._admin.userNO
-            },{
-                key:"GB02",
-                value:req.body.Message,
-                type:"ENCRYPT"
-            },{
-                key:"GB001",
-            	value:Tool.getTimeZone()
-            }
-        ];
-        DB.where("GB00",req.body.GusetBookNO);
-        DB.update(updateData,'GuestBook').then(function(data){
-            res.send("success");
-        },function(err) {
-            console.log(err);
-            res.send("留言失敗");
+        AccountLib.getAuthority(req.session._admin,"03").then(function(){
+            var DB = new Sql.DB();
+            var updateData = [
+                {
+                    key:"GB02",
+                    value:req.body.Message,
+                    action:"ENCRYPT"
+                },{
+                    key:"GB001",
+                	value:Tool.getTimeZone()
+                }
+            ];
+            DB.where("GB00",req.body.GusetBookNO);
+            DB.update(updateData,'GuestBook', {
+                userNO: req.session._admin.userNO,
+                IP: req.headers['x-forwarded-for'] || req.connection.remoteAddress
+            }, 6).then(function(data){
+                res.send("success");
+            },function(err) {
+                console.log(err);
+                res.send("留言失敗");
+            });
+        },function(){
+            res.send("權限不足");
         });
+    }
+});
+router.post('/deleteReply',function(req, res) {
+    if(req.session._admin == null){
+        res.send("未登入");
+    }else if(req.body.GusetBookNO == null){
+        res.send("空留言");
+    }else{
+        AccountLib.getAuthority(req.session._admin,"03").then(function(){
+            var DB = new Sql.DB();
+            var updateData = [{
+                    key:"GB003",
+                	value:1
+                }
+            ];
+            DB.where("GB00",req.body.GusetBookNO);
+            DB.update(updateData,'GuestBook', {
+                userNO: req.session._admin.userNO,
+                IP: req.headers['x-forwarded-for'] || req.connection.remoteAddress
+            }, 7).then(function(data){
+                res.send("success");
+            },function(err) {
+                console.log(err);
+                res.send("失敗");
+            });
+        },function(){
+            res.send("權限不足");
+        });
+        
     }
 });
 router.get('*', ErrorRender);
 //method
-function Render(res,login,firm,guestBook) {
+function Render(res,login,firm,guestBook,isManger) {
     res.render('layouts/front_layout', {
         Title: firm.title,
         Login: login,
@@ -200,7 +242,8 @@ function Render(res,login,firm,guestBook) {
         Include: [
             { url: "../pages/firm", value: {
                                         firm:firm,
-                                        guestBook:guestBook
+                                        guestBook:guestBook,
+                                        isManger:isManger
                                     } 
             }
         ]

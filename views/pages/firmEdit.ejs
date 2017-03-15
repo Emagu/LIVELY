@@ -23,8 +23,16 @@
             });
         });
         //預設值
-        $("#firm_city").val(<%= value.city%>).change();
-        $("#firm_country").val(<%= value.ctry%>).change();
+        <% if(value.city!=null){ %>
+            $("#firm_city").val(<%= value.city%>).change();
+        <% }else{ %>
+            $("#firm_city").val(0).change();
+        <% } %>
+        <% if(value.ctry!=null){ %>
+            $("#firm_country").val(<%= value.ctry%>).change();
+        <% }else{ %>
+            $("#firm_country").val(0).change();
+        <% } %>
     });
     function editerInit(){
         tinymce.init({

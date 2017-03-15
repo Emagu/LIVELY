@@ -11,15 +11,24 @@
         <h1>留言板</h1>
     </div>
     <% value.guestBook.forEach(function(gb){ %>
-        <% var data = gb.data.split("<br />")%>
         <div class="guestFloor">
             <p>留言者:<%= gb.Name%></p>
             <p>留言時間:<%= gb.time%></p>
-            <div>內容:
-            <% data.forEach(function(line){%>
-                <%= line %><br/>
-            <% });%>
-            </div>
+            <p>內容:</p>
+            <textarea disabled id="data_<%= gb.NO%>" style="resize: none;overflow: auto;"rows="10" cols="50"></textarea><br>
+            <p>回覆:<% if(gb.replyTime!=null){%><a align="right">回覆時間:<%= gb.replyTime%></a><% }%></p>
+            <textarea disabled id="reply_<%= gb.NO%>" style="resize: none;overflow: auto;"rows="10" cols="50"></textarea><br>
+            <% if(value.isManger){ %>
+                <% if(gb.reply!=null){%>
+                    <button id="reply_btn_<%= gb.NO%>" onclick="editReply(<%= gb.NO%>)">編輯</button>
+                    <button id="delete_btn_<%= gb.NO%>" onclick="deleteReply(<%= gb.NO%>)">刪除</button>
+                    <button id="canncel_btn_<%= gb.NO%>" style="display:none" onclick="canncelReply(<%= gb.NO%>,'編輯')">取消</button>
+                <% }else{%>
+                    <button id="reply_btn_<%= gb.NO%>" onclick="editReply(<%= gb.NO%>)">回覆</button>
+                    <button id="canncel_btn_<%= gb.NO%>" style="display:none" onclick="canncelReply(<%= gb.NO%>,'回覆')">取消</button>
+                <% }%>
+            <% } %>
+            <br>
         </div>
     <% }); %>
     <div class="guestComment">
@@ -32,11 +41,57 @@
         $("#firmView").html(decodeURIComponent('<%= value.firm.html %>'));
         $("#firm_city").html(TAR.getCity(<%= value.firm.city %>));
         $("#firm_ctry").html(TAR.getCountry(<%= value.firm.city %>,<%= value.firm.ctry %>));
+        <% value.guestBook.forEach(function(gb){ %>
+            <% if(gb.data!=null){%>
+                $("#data_<%= gb.NO%>").val(decodeURIComponent('<%= gb.data%>'));
+            <% }%>
+            <% if(gb.reply!=null){ %>
+                $("#reply_<%= gb.NO%>").val(decodeURIComponent('<%= gb.reply%>'));
+            <% } %>
+        <% }); %>
     });           
     function commentSumit(){
         $.post("/firm/commentSumit",{
-            Message:$("#CommentMessage").val().replace(/[\n\r]+/g,'<br />'),
+            Message:encodeURIComponent($("#CommentMessage").val()),
             firmNO:<%= value.firm.ID%>
+        },function(status){
+            if(status == "success") location.reload();
+            else toastr.error( '',status, {
+                    "positionClass": "toast-bottom-full-width",
+    				"timeOut": "3000",
+    				"closeButton": true
+    			});
+        },"html");
+    }
+    function canncelReply(commentNO,buttonText){
+        $("#canncel_btn_"+commentNO).css("display","none");
+        $("#delete_btn_"+commentNO).css("display","block");
+        $("#reply_"+commentNO).attr("disabled",true); 
+        $("#reply_btn_"+commentNO).text(buttonText);
+    }
+    function editReply(commentNO){
+        if($("#reply_"+commentNO).attr("disabled")!=null){
+            $("#reply_"+commentNO).attr("disabled",false); 
+            $("#reply_btn_"+commentNO).text("送出");
+            $("#delete_btn_"+commentNO).css("display","none");
+            $("#canncel_btn_"+commentNO).css("display","block");
+        }else{
+            $.post("/firm/reply",{
+                Message:encodeURIComponent($("#reply_"+commentNO).val()),
+                GusetBookNO:commentNO
+            },function(status){
+                if(status == "success") location.reload();
+                else toastr.error( '',status, {
+                        "positionClass": "toast-bottom-full-width",
+        				"timeOut": "3000",
+        				"closeButton": true
+        			});
+            },"html");
+        }
+    }
+    function deleteReply(commentNO){
+        $.post("/firm/deleteReply",{
+            GusetBookNO:commentNO
         },function(status){
             if(status == "success") location.reload();
             else toastr.error( '',status, {
