@@ -2,14 +2,16 @@
 <html>
 	<head>
 		<title><%= Title%></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
 		<link rel="stylesheet" href="/public/css/w3.css">
 		<link rel="stylesheet" href="/public/css/my.css">
-		<link rel="stylesheet" href="/public/css/toastr.min.css">
-		
+		<link rel="stylesheet" href="/public/js/toastr/toastr.min.css">
 		<script src="/public/js/jquery.js"></script>
+		<script src="/public/js/modernizr.custom.97074.js"></script>
+		<script src="/public/js/modernizr_mq.js"></script>
 		<script src="/public/js/my.js"></script>
 		<script src="/public/js/jquery.validate.js"></script>
-		<script src="/public/js/toastr.min.js"></script>
+		<script src="/public/js/toastr/toastr.min.js"></script>
 		<% CSSs.forEach(function(CSS){ %>
 			<link rel="stylesheet" href= <%= CSS%>>
 		<% });%>
