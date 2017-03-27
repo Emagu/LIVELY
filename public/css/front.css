@@ -77,17 +77,19 @@ html{-webkit-text-size-adjust: none;}
 		padding:5px;
 		float:right;
 	}
-	#login{
+	
+	#login,#backstage{
 		float:left;
 		width:40%;
 		margin-left:15%;
 		cursor: pointer;
 	}
-	#register{
+	#register,#logout{
 		float:left;
 		width:40%;
 		cursor: pointer;
 	}
+	
 	#login:hover, #register:hover{
 		color:#EB655D;
 	}

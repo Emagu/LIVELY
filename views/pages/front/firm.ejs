@@ -1,67 +1,321 @@
-機構編號:<%= value.firm.no %><br>
-機構名稱:<%= value.firm.title %><br>
-機構所在縣市:<a id="firm_city"></a><br>
-機構所在鄉鎮:<a id="firm_ctry"></a><br>
-機構地址:<%= value.firm.addr %><br>
-機構市話:<%= value.firm.phone %><br>
-機構傳真:<%= value.firm.fax %><br>
-平均價位:<%= value.firm.price%><br>
-<p id="firm_type"></p>
-<p id="firm_type2"></p>
-<p id="firm_level"></p>
-<div id="firmView"></div>
-<div id="guestBook" align='center'>
-    <div class="guestHead">
-        <h1>留言板</h1>
-    </div>
-    <% value.guestBook.forEach(function(gb){ %>
-        <div class="guestFloor">
-            <p>留言者:<%= gb.Name%></p>
-            <p>留言時間:<%= gb.time%></p>
-            <p>內容:</p>
-            <textarea disabled id="data_<%= gb.NO%>" style="resize: none;overflow: auto;"rows="10" cols="50"></textarea><br>
-            <p>回覆:<% if(gb.replyTime!=null && gb.replyStatus==1){%><a align="right">回覆時間:<%= gb.replyTime%></a><% }%></p>
-            <textarea disabled id="reply_<%= gb.NO%>" style="resize: none;overflow: auto;"rows="10" cols="50"></textarea><br>
-            <% if(value.isManger){ %>
-                <% if(gb.reply!=null){%>
-                    <button id="reply_btn_<%= gb.NO%>" onclick="editReply(<%= gb.NO%>)">編輯</button>
-                    <button id="delete_btn_<%= gb.NO%>" onclick="deleteReply(<%= gb.NO%>)">刪除</button>
-                    <button id="canncel_btn_<%= gb.NO%>" style="display:none" onclick="canncelReply(<%= gb.NO%>,'編輯')">取消</button>
-                <% }else{%>
-                    <button id="reply_btn_<%= gb.NO%>" onclick="editReply(<%= gb.NO%>)">回覆</button>
-                    <button id="canncel_btn_<%= gb.NO%>" style="display:none" onclick="canncelReply(<%= gb.NO%>,'回覆')">取消</button>
-                <% }%>
-            <% } %>
-            <br>
-        </div>
-    <% }); %>
-    <div class="guestComment">
-        <textarea id="CommentMessage" style="resize: none;overflow: auto;"rows="10" cols="50"></textarea>
-        <button onclick="commentSumit()">發送</button>
-    </div>
+<style>
+		/* Desktop --------------------------------------*/
+			#search_wrap{
+				width:100%;
+				height:auto;
+				background:#a0ced9;
+				padding-bottom:50px;
+			}
+			#search_wrap_left{
+				width:60%;
+				height:auto;
+				margin-left:5%;
+				float:left;
+			}
+			.search_item_div_left{
+				width:5%;
+				height:100%;
+				float:left;
+				position:absolute;
+				background: white url(/public/images/img01.png) repeat;
+			}
+			.search_item_div_right{
+				width:85%;
+				height:100%;
+				position:relative;
+				margin-left:10%;
+			}
+			.search_item{
+				width:100%;
+				height:auto;
+				margin-top: 25px;
+				margin-bottom:10px;
+				background:white;
+				position:relative;
+				box-shadow:0px 1px 4px rgba(41, 51, 57, 0.5);
+				border-bottom-left-radius: 8px;
+				border-bottom-right-radius: 8px;
+				border-top-left-radius: 8px;
+				border-top-right-radius: 8px;
+				overflow:hidden;
+			}
+			.search_item_top{
+				width:100%;
+				margin-top:20px;
+			}
+			.search_item_middle{
+				padding-bottom:20px;
+			}
+			.search_item_titlescore{
+				padding-top:5px;
+				padding-bottom:5px;
+				padding-left:10px;
+				padding-right:10px;
+				background: #fcf5c7;
+				float:left;
+				box-shadow:-2px -2px 2px rgba(41, 51, 57, 0.5);
+				border-bottom-left-radius: 8px;
+				border-bottom-right-radius: 8px;
+				border-top-left-radius: 8px;
+				border-top-right-radius: 8px;
+			}
+			.search_item_titlescore .item_text1{
+				font-size:35px;
+				font-family: '微軟正黑體';
+				letter-spacing: 2px;
+				color: #ff686b;
+				font-weight: bold;
+
+			}
+			.search_item_titlediv{
+				width:85%;
+				margin-left:20px;
+				float:left;
+			}
+			.search_item_titlediv .item_text1{
+				color:black;
+				font-size:25px;
+			}
+			.search_item_textdiv{
+				margin-left:0%;
+			}
+			.item_text1{
+				font-size: 19px;
+				font-family: '微軟正黑體';
+				letter-spacing: 2px;
+				color: black;
+				font-weight: bold;
+			}
+			.item_text2{
+				font-size: 17px;
+				font-family: '微軟正黑體';
+				letter-spacing: 2px;
+				color: #555;
+				font-weight: bold;
+			}
+			.item_text3{
+				font-size: 15px;
+				font-family: '微軟正黑體';
+				letter-spacing: 2px;
+				color: #555;
+			}
+			.item_text3b{
+				color:black;
+			}
+			.search_item_pic{
+				width:40%;
+				margin-left:5%;
+				margin-top:20px;
+				float:left;
+			}
+			.search_item_pic img{
+				width:100%;
+			}
+			.pic_left_textdiv{
+				float:left;
+				width:50%;
+				margin-top:20px;
+				margin-bottom:20px;
+				margin-left:0%;
+			}
+			.pic_left_textdiv dt{
+				clear: left;
+				float:left;
+				width:40%;
+			}
+			.pic_left_textdiv dd{
+				float:left;
+				width:60%;
+				line-height:1.8em;
+				border-bottom: 2px dashed #ddd;
+			}
+			.search_item_bottom{
+				margin-top:20px;
+				margin-bottom:30px;
+			}
+			.chat_text{
+				padding-top:10px;
+				padding-bottom:10px;
+			}
+			.search_item_bottom button{
+				margin-top:10px;
+			}
+			#userid{
+				color:#FF8888;
+			}
+			#usertext{
+				margin-left:5%;
+				color:#555;
+			}
+			#CommentMessage{
+				width:100%;
+				height:200px;
+				border: 2px dashed #ddd;
+				padding:20px;
+			}
+
+			#search_wrap_right{
+				width:28%;
+				height:auto;
+				margin-left:2%;
+				float:left;
+			}
+			.div_top{
+				width:100%;
+				height:30px;
+				position:relative;
+				background: white url(/public/images/img01.png) repeat;
+				border-top-left-radius:8px;
+				border-top-right-radius:8px;
+				box-shadow:0px 0px 4px rgba(41, 51, 57, 0.5);
+			}
+			.other1{
+				margin-top: 25px;
+			}
+			.other1 .wrap{
+				background-color: #ff686b;
+				border-bottom-left-radius: 8px;
+				border-bottom-right-radius: 8px;
+				box-sizing: border-box;
+				color: rgb(255, 255, 255);
+				font-family: "微軟正黑體",sans-serif;
+				font-size: 14px;
+				line-height: 28.8px;
+				margin-bottom: 0px;
+				margin-left: 0px;
+				margin-right: 0px;
+				text-align: center;
+				width: 100%;
+				box-shadow:0px 1px 4px rgba(41, 51, 57, 0.5);
+			}
+			.other2{
+				margin-top: 10px;
+			}
+			.other2 .wrap{
+				background-color:#fcf5c7;
+				border-bottom-left-radius: 8px;
+				border-bottom-right-radius: 8px;
+				box-sizing: border-box;
+				color: rgb(255, 255, 255);
+				font-family: "微軟正黑體",sans-serif;
+				font-size: 14px;
+				line-height: 28.8px;
+				margin-bottom: 0px;
+				margin-left: 0px;
+				margin-right: 0px;
+				text-align: center;
+				width: 100%;
+				box-shadow:0px 1px 4px rgba(41, 51, 57, 0.5);
+			}
+			#FB_div_top{
+				width:340px;
+				height:30px;
+				background: white url(/public/images/img01.png) repeat;
+				border-top-left-radius:8px;
+				border-top-right-radius:8px;
+				box-shadow:0px 0px 4px rgba(41, 51, 57, 0.5);
+			}
+			#FB_div{
+				margin-bottom:50px;
+				margin-top:10px;
+			}
+		</style>
+<div id="search_wrap">
+	<div id="search_wrap_left">
+		<div class="search_item">
+			<div class="search_item_div_left"></div>
+			<div class="search_item_div_right">
+				<div class="search_item_top">
+					<div class="search_item_titlescore"><font class="item_text1" id="firm_level"></font></div>
+					<div class="search_item_titlediv"><font class="item_text1"><%= value.firm.title %></font></div>
+					<div class="clear"></div>
+				</div>
+				<div class="search_item_middle">
+					<div class="pic_left_textdiv">
+						<dl>
+							<dt><font class="item_text1">編號:</font></dt><dd><font class="item_text3b"><%= value.firm.no %></font></dd>
+							<dt><font class="item_text1">所在縣市:</font></dt><dd><font class="item_text3b" id="firm_city"></font></dd>
+							<dt><font class="item_text1">所在鄉鎮:</font></dt><dd><font class="item_text3b" id="firm_ctry"></font></dd>
+							<dt><font class="item_text1">地址:</font></dt><dd><font class="item_text3b"><%= value.firm.addr %></font>
+							<dt><font class="item_text1">市話:</font></dt><dd><font class="item_text3b"><%= value.firm.phone %></font></dd>
+							<dt><font class="item_text1">平均價位:</font></dt><dd><font class="item_text3b"><%= value.firm.price %></font></dd>
+						</dl>
+					</div>
+					<div class="search_item_pic"><img src="/public/images/example.jpg"></div>
+					<div class="clear"></div>
+					<div class="search_item_textdiv"><font class="item_text2">其他相關資訊:</font></div>
+					<div class="search_item_textdiv"><font class="item_text2">傳真:</font><font class="item_text3"><%= value.firm.fax %></font></div>
+					<div class="search_item_textdiv"><font class="item_text2">功能分類:</font><font class="item_text3" id="firm_type"></font></div>
+					<div class="search_item_textdiv"><font class="item_text2">長照2.0類型分類:</font><font class="item_text3" id="firm_type2"></font></div>
+					<div class="search_item_textdiv" id="firmView"></div>
+				</div>
+				<div id="chat_and_replay">
+				    <% value.guestBook.forEach(function(gb,index){ %>
+                        <div class="chat_text <%= index%2==0 ? "bg_grey" : "" %>">
+                            <div class="userid"><%= gb.Name%>:</div>
+                            <div class="usertext" id="data_<%= gb.NO%>"></div>
+                        </div>
+                    <% }); %>
+                </div>
+				<div class="search_item_bottom">
+					<div class="guestComment">
+						<div class="search_item_textdiv"><font class="item_text2">留言板:</font></div>
+				        <textarea id="CommentMessage" style="resize: none;overflow: auto;" rows="10" cols="50"></textarea>
+				    </div>
+				    <center><button onclick="commentSumit()" type="submit" class="button_red">發送</button></center>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div id="search_wrap_right">
+		<div id="other_div">
+			<div class="other1">
+				<div class="div_top"></div>
+				<div class="wrap">
+				<p>最新消息</p>
+				<div>xxx</div>
+				</div>
+			</div>
+			<div class="other2">
+				<div class="div_top"></div>
+				<div class="wrap">
+				<p class="item_text1">想找機構、看護、照服員？</p>
+				<p class="item_text1">好的，請交給我們!</p>
+				<p class="item_text3">XXXXXX@XXXXX.XXX.XXX</p>
+				</div>
+			</div>
+		</div>
+		<div id="FB_div">
+			<div id="FB_div_top"></div>
+			<iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FJackyleedesign%2F&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="340" height="500" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+		</div>
+	</div>
+	<div class="clear"></div>
+	<div class="color_div"></div>
 </div>
 <script>
     $(document).ready(function(){
         var typeA = ["安養機構","養護機構","長期照顧中心","護理之家"];
         var type2A = ["A.社區整合服務中心","B.複合型日間照護中心","C.巷弄長照站"];
         var level = ["優","甲","乙","丙"];
-        $("#firm_type").html("機構功能分類:" + typeA[<%= value.firm.type%>]);
-        $("#firm_type2").html("長照2.0類型分類:"+type2A[<%= value.firm.type2%>]);
-        $("#firm_level").html("政府評鑑:"+level[<%= value.firm.level%>]);
+        $("#firm_type").text(typeA[<%= value.firm.type%>]);
+        $("#firm_type2").text(type2A[<%= value.firm.type2%>]);
+        $("#firm_level").text(level[<%= value.firm.level%>]);
         $("#firmView").html(decodeURIComponent('<%= value.firm.html %>'));
-        $("#firm_city").html(TAR.getCity(<%= value.firm.city %>));
-        $("#firm_ctry").html(TAR.getCountry(<%= value.firm.city %>,<%= value.firm.ctry %>));
+        $("#firm_city").text(TAR.getCity(<%= value.firm.city %>));
+        $("#firm_ctry").text(TAR.getCountry(<%= value.firm.city %>,<%= value.firm.ctry %>));
         <% value.guestBook.forEach(function(gb){ %>
             <% if(gb.data!=null){%>
-                $("#data_<%= gb.NO%>").val(decodeURIComponent('<%= gb.data%>'));
+                $("#data_<%= gb.NO%>").html(decodeURIComponent('<%= gb.data%>').replace(/\r\n|\n/g,"<br/>"));
             <% }%>
             <% if(gb.reply!=null && gb.replyStatus==1){ %>
-                $("#reply_<%= gb.NO%>").val(decodeURIComponent('<%= gb.reply%>'));
+                $("#reply_<%= gb.NO%>").html(decodeURIComponent('<%= gb.reply%>'));
             <% } %>
         <% }); %>
     });           
     function commentSumit(){
-        $.post("/firm/commentSumit",{
+        $.post("/front/firm/commentSumit",{
             Message:encodeURIComponent($("#CommentMessage").val()),
             firmNO:<%= value.firm.ID%>
         },function(status){
@@ -112,3 +366,20 @@
         },"html");
     }
 </script>
+<!--
+<p id="firm_type"></p>
+<p id="firm_type2"></p>
+<p id="firm_level"></p>
+<div id="firmView"></div>
+<div id="guestBook" align='center'>
+    <div class="guestHead">
+        <h1>留言板</h1>
+    </div>
+    
+    <div class="guestComment">
+        <textarea id="CommentMessage" style="resize: none;overflow: auto;"rows="10" cols="50"></textarea>
+        <button onclick="commentSumit()">發送</button>
+    </div>
+</div>
+
+-->
