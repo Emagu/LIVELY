@@ -3,9 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const promise = require("promise");
 const router = express.Router();
-const Sql = require("../lib/MySQL_X");
-const Tool = require("../lib/tool");
-const AccountLib = require("../lib/Account");
+const Sql = require("../../lib/MySQL_X");
+const Tool = require("../../lib/tool");
+const AccountLib = require("../../lib/Account");
 const fs = require("fs");
 router.use(bodyParser.json());       // to support JSON-encoded bodies
 router.use(bodyParser.urlencoded({
@@ -14,17 +14,15 @@ router.use(bodyParser.urlencoded({
 }));
 router.use(function(req, res, next) {//權限認證
     if(req.session._admin!=null) AccountLib.checkLoginBySession(req.session._admin)
-	    .then(function(){
-    		req.session.isLogin = true;
+	    .then(function(data){
+    		req.session.nickName = data;
     		req.session.save();
     		next();
     	},function(){
-    	    req.session.isLogin = false;
     	    req.session.save();
 		    next();
 	    });
     else{
-        req.session.isLogin = false;
         req.session.save();
         next();
     }
@@ -37,13 +35,19 @@ router.get('/', function (req, res) {
             let DB = new Sql.DB();
             DB.select("F00","DEFAULT","ID");
             DB.select("F01","DECRYPT","no");
-            DB.select("F02","DECRYPT","title");
+            DB.select("F02","DEFAULT","title");
             DB.select("F03A","DEFAULT","city");
             DB.select("F03B","DEFAULT","ctry");
             DB.select("F03C","DECRYPT","addr");
             DB.select("F04","DECRYPT","phone");
             DB.select("F05","DECRYPT","fax");
+            //DB.select("F06","DECRYPT","fax");
+            DB.select("F07","DEFAULT","type");
+            DB.select("F08","DEFAULT","type2");
+            DB.select("F09","DEFAULT","level");
+            DB.select("F10","DEFAULT","price");
             DB.where("F00",req.query.NO);
+            DB.where("F001",0);
             DB.get("Firm").then(function(resultData){
                 if(resultData.length<=0){
                     ErrorRender(req,res);
@@ -66,11 +70,12 @@ router.get('/', function (req, res) {
         new promise(function(success,fail){//留言搜尋
             let DB = new Sql.DB();
             DB.select("GB00","DEFAULT","NO");
-            DB.select("UA05","DECRYPT","Name");
+            DB.select("UA06","DECRYPT","Name");
             DB.select("GB01","DECRYPT","data");
             DB.select("GB02","DECRYPT","reply");
             DB.select("GB000","DEFAULT","time");
             DB.select("GB001","DEFAULT","replyTime");
+            DB.select("GB004","DEFAULT","replyStatus");
             DB.join("UserAccount","UserAccount.UA00=GuestBook.UA00");
             DB.where("F00",req.query.NO);
             DB.where("GB003",0);
@@ -87,9 +92,9 @@ router.get('/', function (req, res) {
         })
         ]).then(function (resultArray) {
             AccountLib.getAuthority(req.session._admin,"03").then(function(){
-                Render(res,req.session.isLogin,resultArray[0],resultArray[1],true);
+                Render(res,req,resultArray[0],resultArray[1],true);
             },function(){
-                Render(res,req.session.isLogin,resultArray[0],resultArray[1],false);
+                Render(res,req,resultArray[0],resultArray[1],false);
             });
             
         },function(err){
@@ -181,6 +186,9 @@ router.post('/reply',function(req, res){
                 },{
                     key:"GB001",
                 	value:Tool.getTimeZone()
+                },{
+                    key:"GB004",
+                    value:1
                 }
             ];
             DB.where("GB00",req.body.GusetBookNO);
@@ -207,8 +215,8 @@ router.post('/deleteReply',function(req, res) {
         AccountLib.getAuthority(req.session._admin,"03").then(function(){
             var DB = new Sql.DB();
             var updateData = [{
-                    key:"GB003",
-                	value:1
+                    key:"GB004",
+                	value:0
                 }
             ];
             DB.where("GB00",req.body.GusetBookNO);
@@ -227,12 +235,41 @@ router.post('/deleteReply',function(req, res) {
         
     }
 });
+router.post('/deleteComment',function(req, res) {
+    if(req.session._admin == null){
+        res.send("未登入");
+    }else if(req.body.GusetBookNO == null){
+        res.send("空留言");
+    }else{
+        AccountLib.getAuthority(req.session._admin,"03").then(function(){
+            var DB = new Sql.DB();
+            var updateData = [{
+                    key:"GB003",
+                	value:1
+                }
+            ];
+            DB.where("GB00",req.body.GusetBookNO);
+            DB.update(updateData,'GuestBook', {
+                userNO: req.session._admin.userNO,
+                IP: req.headers['x-forwarded-for'] || req.connection.remoteAddress
+            }, 8).then(function(data){
+                res.send("success");
+            },function(err) {
+                console.log(err);
+                res.send("失敗");
+            });
+        },function(){
+            res.send("權限不足");
+        });
+        
+    }
+});
 router.get('*', ErrorRender);
 //method
-function Render(res,login,firm,guestBook,isManger) {
+function Render(res,req,firm,guestBook,isManger) {
     res.render('layouts/front_layout', {
         Title: firm.title,
-        Login: login,
+        Login: req.session.nickName,
         CSSs: [
             
         ],
@@ -240,7 +277,7 @@ function Render(res,login,firm,guestBook,isManger) {
             "/public/js/Taiwan_Administrative_Region.js"
         ],
         Include: [
-            { url: "../pages/firm", value: {
+            { url: "../pages/front/firm", value: {
                                         firm:firm,
                                         guestBook:guestBook,
                                         isManger:isManger

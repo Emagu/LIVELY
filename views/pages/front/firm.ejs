@@ -5,6 +5,10 @@
 機構地址:<%= value.firm.addr %><br>
 機構市話:<%= value.firm.phone %><br>
 機構傳真:<%= value.firm.fax %><br>
+平均價位:<%= value.firm.price%><br>
+<p id="firm_type"></p>
+<p id="firm_type2"></p>
+<p id="firm_level"></p>
 <div id="firmView"></div>
 <div id="guestBook" align='center'>
     <div class="guestHead">
@@ -16,7 +20,7 @@
             <p>留言時間:<%= gb.time%></p>
             <p>內容:</p>
             <textarea disabled id="data_<%= gb.NO%>" style="resize: none;overflow: auto;"rows="10" cols="50"></textarea><br>
-            <p>回覆:<% if(gb.replyTime!=null){%><a align="right">回覆時間:<%= gb.replyTime%></a><% }%></p>
+            <p>回覆:<% if(gb.replyTime!=null && gb.replyStatus==1){%><a align="right">回覆時間:<%= gb.replyTime%></a><% }%></p>
             <textarea disabled id="reply_<%= gb.NO%>" style="resize: none;overflow: auto;"rows="10" cols="50"></textarea><br>
             <% if(value.isManger){ %>
                 <% if(gb.reply!=null){%>
@@ -38,6 +42,12 @@
 </div>
 <script>
     $(document).ready(function(){
+        var typeA = ["安養機構","養護機構","長期照顧中心","護理之家"];
+        var type2A = ["A.社區整合服務中心","B.複合型日間照護中心","C.巷弄長照站"];
+        var level = ["優","甲","乙","丙"];
+        $("#firm_type").html("機構功能分類:" + typeA[<%= value.firm.type%>]);
+        $("#firm_type2").html("長照2.0類型分類:"+type2A[<%= value.firm.type2%>]);
+        $("#firm_level").html("政府評鑑:"+level[<%= value.firm.level%>]);
         $("#firmView").html(decodeURIComponent('<%= value.firm.html %>'));
         $("#firm_city").html(TAR.getCity(<%= value.firm.city %>));
         $("#firm_ctry").html(TAR.getCountry(<%= value.firm.city %>,<%= value.firm.ctry %>));
@@ -45,7 +55,7 @@
             <% if(gb.data!=null){%>
                 $("#data_<%= gb.NO%>").val(decodeURIComponent('<%= gb.data%>'));
             <% }%>
-            <% if(gb.reply!=null){ %>
+            <% if(gb.reply!=null && gb.replyStatus==1){ %>
                 $("#reply_<%= gb.NO%>").val(decodeURIComponent('<%= gb.reply%>'));
             <% } %>
         <% }); %>

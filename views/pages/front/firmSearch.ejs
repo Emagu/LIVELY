@@ -1,0 +1,89 @@
+<div class="searchBar">
+    <input type="text" id="firm_keyword" width="200px" placeholder="輸入關鍵字" />
+    <select id="firm_city"></select>
+    <select id="firm_country"></select>
+    <button onclick="search()">搜尋</button>
+    <br>
+    <div class="frqSearch"></div><!-- 搜尋排行 -->
+</div>
+<div class="selecter"><!-- 篩選器 -->
+    機構功能分類:
+        <select id="firm_type">
+            <option value='-1' selected="selected">全部</option>
+            <option value='0'>安養機構</option>
+            <option value='1'>養護機構</option>
+            <option value='2'>長期照顧中心</option>
+            <option value='3'>護理之家</option>
+        </select>
+    <br/>
+    長照2.0類型分類:
+        <select id="firm_type2">
+            <option value='-1' selected="selected">全部</option>
+            <option value='0'>A.社區整合服務中心</option>
+            <option value='1'>B.複合型日間照護中心</option>
+            <option value='2'>C.巷弄長照站</option>
+        </select>
+    <br/>
+    政府評鑑:
+        <select id="firm_level">
+            <option value='-1' selected="selected">全部</option>
+            <option value='0'>優</option>
+            <option value='1'>甲</option>
+            <option value='2'>乙</option>
+            <option value='3'>丙</option>
+        </select>
+    <br/>
+    平均價位:
+        <select id="firm_price">
+            <option value='-1' selected="selected">不限</option>
+            <option value='0'>0~20000</option>
+            <option value='1'>20001~50000</option>
+            <option value='2'>50001~100000</option>
+            <option value='3'>100001已上</option>
+        </select>
+    <br />
+</div>
+<div id="Map">
+</div>
+<script>
+    $(document).ready(function(){
+        //縣市選擇
+        $("#firm_city").append("<option value='-1'>不限</option>");
+        TAR.getCitys().forEach(function(cityValue,index){
+            $("#firm_city").append("<option value='"+index+"'>"+cityValue+"</option>");
+        });
+        //鄉鎮隨縣市變換而改變
+        $("#firm_city").change(function(){
+            $("#firm_country").empty();
+            if($("#firm_city").val()!=-1){
+                TAR.getCountrys($("#firm_city").val()).forEach(function(countryValue,index){
+                    $("#firm_country").append("<option value='"+index+"'>"+countryValue+"</option>");
+                });
+            }else{
+                $("#firm_country").append("<option value='-1'>不限</option>");
+            }
+        });
+        //預設值
+        $("#firm_country").val(-1).change();
+        $("#firm_city").val(-1).change();
+        <% if(value.req.city!=null){ %>
+            $("#firm_city").val(<%= value.req.city%>).change();
+        <% } %>
+        <% if(value.req.ctry!=null){ %>
+            $("#firm_country").val(<%= value.req.ctry%>).change();
+        <% } %>
+        <% value.res.forEach(function(val){ %>
+            console.log('<%= val.NO%>');
+            console.log('<%= val.Name%>');
+        <% }); %>
+    });
+    function search(){
+        location.href = "/front/firmSearch?city=" + $("#firm_city").val()
+                      + "&ctry=" + $("#firm_country").val()
+                      + "&keyword=" + $("#firm_keyword").val()
+                      + "&type=" + $("#firm_type").val()
+                      + "&type2=" + $("#firm_type2").val()
+                      + "&level=" + $("#firm_level").val()
+                      + "&price=" + $("#firm_price").val()
+    }
+</script>

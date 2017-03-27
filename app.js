@@ -20,24 +20,20 @@ app.use(cookieParser());
 app.use('/public', express.static(__dirname + '/public'));//開放資料
 //router init
 var Router = {
-    index: getRouter("index"),
-    message: getRouter("message"),
-    firmManger: getRouter("firmManger"),
-    firm: getRouter("firm")
+    front: getRouter("front"),
+    backStage: getRouter("backStage")
 };
 //設定router
 app.get('/',function(req, res) {
    res.redirect('/front');
 });
-app.use('/front', Router.index);
-app.use('/page', Router.message);
-app.use('/firmManger', Router.firmManger);
-app.use('/firm', Router.firm);
+app.use('/front', Router.front);
+app.use('/backStage', Router.backStage);
 app.get('*', function(req, res){
     ErrorRender(res);
 }); 
 //method
-function getRouter(url) {//他會匯入檔案
+function getRouter(url) {
     var router = require('./routers/' + url);
     return router;
 }

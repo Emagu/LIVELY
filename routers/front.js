@@ -6,6 +6,10 @@ const Sql = require("../lib/MySQL_X");
 const Tool = require("../lib/tool");
 const AccountLib = require("../lib/Account");
 const AccountRule = require("../config/Account");
+var Router = {
+    firm: getRouter("firm"),
+    firmSearch: getRouter("firmSearch")
+};
 router.use(bodyParser.json());       // to support JSON-encoded bodies
 router.use(bodyParser.urlencoded({
      // to support URL-encoded bodies
@@ -13,10 +17,10 @@ router.use(bodyParser.urlencoded({
 }));
 router.get('/', function (req, res) {
 	AccountLib.checkLoginBySession(req.session._admin)
-	.then(function(){
-		Render(res,true);
+	.then(function(data){
+		Render(res,data);
 	},function(){
-		Render(res,false);
+		Render(res,null);
 	});
 });
 /**
@@ -104,6 +108,22 @@ router.post("/register", function (req, res) {
         }
     }else{
         res.send("密碼格式錯誤");
+        return;
+    }
+    if(req.body.NickName!=null){
+        let nickNameTest = req.body.NickName.length;
+        if(AccountRule.NickNameMin > nickNameTest || nickNameTest > AccountRule.NickNameMax){
+            res.send("暱稱格式錯誤");
+            return;
+        }else{
+            newData.push({
+        		key:"UA06",
+    		    value:req.body.NickName,
+    		    action:"ENCRYPT"
+    	    });
+        }
+    }else{
+        res.send("暱稱格式錯誤");
         return;
     }
     if(req.body.Password_RE!=null){
@@ -194,7 +214,13 @@ router.post("/register", function (req, res) {
     });
 });
 router.post("/logout", AccountLib.logout);
+router.use("/firm",Router.firm);
+router.use("/firmSearch",Router.firmSearch);
 router.get('*',ErrorRender);
+function getRouter(url) {
+    var router = require('./front/' + url);
+    return router;
+}
 function Render(res,login) {
     res.render('layouts/front_layout', {
         Title: "首頁",
@@ -204,7 +230,7 @@ function Render(res,login) {
         JavaScripts: [
         ],
         Include: [
-            { url: "../pages/index", value: {} }
+            { url: "../pages/front/index", value: {} }
         ],
         Script: [	
             

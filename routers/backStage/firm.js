@@ -3,9 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const busboy = require('connect-busboy');
 const fs = require("fs-extra");
-const Tool = require("../lib/tool");
-const SQL = require("../lib/MySQL_X");
-const AccountLib = require("../lib/Account");
+const Tool = require("../../lib/tool");
+const SQL = require("../../lib/MySQL_X");
+const AccountLib = require("../../lib/Account");
 let router = express.Router();
 router.use(busboy());
 router.use(bodyParser.json());       // to support JSON-encoded bodies
@@ -23,9 +23,10 @@ router.use(function(req, res, next) {//權限認證
 router.get('/', function (req, res) {
     let db = new SQL.DB();
     db.select("F00","DEFAULT","NO");
-    db.select("F02","DECRYPT","Name");
+    db.select("F02","DEFAULT","Name");
+    db.where("F001",0);
     db.get("Firm").then(function(data){
-        Render(res,data);
+        Render(res,req,data);
     },function(err) {
         console.error(err);
         ErrorRender();
@@ -34,17 +35,21 @@ router.get('/', function (req, res) {
 router.get('/firmEdit', function(req,res){
     switch (req.query.action) {
         case '0':
-            EditRender(res,null);
+            EditRender(res,req,null);
             break;
         case '1':
             let DB = new SQL.DB();
             DB.select("F01","DECRYPT","no");
-            DB.select("F02","DECRYPT","title");
+            DB.select("F02","DEFAULT","title");
             DB.select("F03A","DEFAULT","city");
             DB.select("F03B","DEFAULT","ctry");
             DB.select("F03C","DECRYPT","addr");
             DB.select("F04","DECRYPT","phone");
             DB.select("F05","DECRYPT","fax");
+            DB.select("F07","DEFAULT","type");
+            DB.select("F08","DEFAULT","type2");
+            DB.select("F09","DEFAULT","level");
+            DB.select("F10","DEFAULT","price");
             DB.where("F00",req.query.NO);
             DB.get("Firm").then(function(resultData){
                 if(resultData.length<=0){
@@ -56,7 +61,7 @@ router.get('/firmEdit', function(req,res){
                             ErrorRender(res);
                         }else{
                             resultData[0].html = data.toString();
-                            EditRender(res,resultData[0]);
+                            EditRender(res,req,resultData[0]);
                         }
                     });
                 }
@@ -67,7 +72,7 @@ router.get('/firmEdit', function(req,res){
     }    
 });
 router.get('/preview', function(req,res){
-    PreviewRender(res,req.query);
+    PreviewRender(res,req,req.query);
 });
 router.post('/editSumit',function(req,res){
     let db = new SQL.DB();
@@ -79,8 +84,7 @@ router.post('/editSumit',function(req,res){
                 action: "ENCRYPT"
             },{
                 key: "F02",
-                value: req.body.title,
-                action: "ENCRYPT"
+                value: req.body.title
             },{
                 key: "F03A",
                 value: req.body.city
@@ -99,6 +103,18 @@ router.post('/editSumit',function(req,res){
                 key: "F05",
                 value: req.body.fax,
                 action: "ENCRYPT"
+            },{
+                key: "F07",
+                value: req.body.type
+            },{
+                key: "F08",
+                value: req.body.type2
+            },{
+                key: "F09",
+                value: req.body.level
+            },{
+                key: "F10",
+                value: req.body.price
             },{
                 key: "F000",
                 value: Tool.getTimeZone()
@@ -127,8 +143,7 @@ router.post('/editSumit',function(req,res){
                 action: "ENCRYPT"
             },{
                 key: "F02",
-                value: req.body.title,
-                action: "ENCRYPT"
+                value: req.body.title
             },{
                 key: "F03A",
                 value: req.body.city
@@ -147,6 +162,18 @@ router.post('/editSumit',function(req,res){
                 key: "F05",
                 value: req.body.fax,
                 action: "ENCRYPT"
+            },{
+                key: "F07",
+                value: req.body.type
+            },{
+                key: "F08",
+                value: req.body.type2
+            },{
+                key: "F09",
+                value: req.body.level
+            },{
+                key: "F10",
+                value: req.body.price
             },{
                 key: "F000",
                 value: Tool.getTimeZone()
@@ -186,29 +213,47 @@ router.post('/uploadNewsImage',function(req, res) {
         });
     });
 });
+router.post('/deleteFirm',function(req, res) {
+    var db = new SQL.DB();
+    db.where("F00",req.body.FirmNO);
+    db.update([{
+        key: "F001",
+        value: 1
+    }],"Firm", {
+        userNO: req.session._admin.userNO,
+        IP: req.headers['x-forwarded-for'] || req.connection.remoteAddress
+    }, 9).then(function(){
+        res.send("success");
+    },function(err){
+        console.error(err); 
+        res.send("fail");
+    });
+});
 router.get('*',ErrorRender);
-function Render(res,firmList) {
-    res.render('layouts/front_layout', {
+function Render(res,req,firmList) {
+    res.render('layouts/backStage_layout', {
         Title: "機構管理-機構列表",
-        Login: true,
+        Login:req.session._admin.nickName,
+        Authority: req.session._admin.Authority,
         CSSs: [
         ],
         JavaScripts: [
         ],
         Include: [
-            {url:"../pages/firmManger",value:firmList}
+            {url:"../pages/backStage/firm/firmManger",value:firmList}
         ],
         Script: [	
             
         ]
     });
 }
-function EditRender(res,firm) {
+function EditRender(res,req,firm) {
     if(firm==null) firm = {action:0};//新增
     else firm.action = 1;//修改
-    res.render('layouts/front_layout', {
+    res.render('layouts/backStage_layout', {
         Title: "機構管理-機構編輯",
-        Login: true,
+        Login:req.session._admin.nickName,
+        Authority: req.session._admin.Authority,
         CSSs: [
         ],
         JavaScripts: [
@@ -216,17 +261,17 @@ function EditRender(res,firm) {
             "/public/js/Taiwan_Administrative_Region.js"
         ],
         Include: [
-            {url:"../pages/firmEdit",value:firm}
+            {url:"../pages/backStage/firm/firmEdit",value:firm}
         ],
         Script: [	
             
         ]
     });
 }
-function PreviewRender(res,firm){
+function PreviewRender(res,req,firm){
     res.render('layouts/front_layout', {
         Title: firm.title,
-        Login: true,
+        Login:req.session._admin.nickName,
         CSSs: [
             
         ],
@@ -234,7 +279,7 @@ function PreviewRender(res,firm){
             "/public/js/Taiwan_Administrative_Region.js"
         ],
         Include: [
-            { url: "../pages/firmPre", value: firm }
+            { url: "../pages/backStage/firm/firmPre", value: firm }
         ],
         Script: [	
         ]

@@ -1,0 +1,105 @@
+
+
+
+<label>單頁顯示：</label>
+<select id="table_page_size" onchange='dataTable.resizePage($("#table_page_size").val())'>
+    <option value="10">10</option>
+    <option value="50">50</option>
+    <option value="100">100</option>
+</select>
+<label>搜尋類型：</label>
+<select id="table_search">
+    <option value="NO">編號</option>
+    <option value="Name">帳號</option>
+    <option value="NickName">暱稱</option>
+</select>
+<label>搜尋：</label>
+<input type="text" id="searchBarText" />
+<button onclick="search()">搜尋</button>
+<br />
+<table id="table" width="100%"></table>
+<script>
+    dataTable.init({
+        TableID: "table",
+        columns: [
+            {
+                id: "ID",
+                title: "會員編號",
+                sort: true,
+                style: {
+                    "width": "20px"
+                }
+            },
+            {
+                id: "Account",
+                title: "會員帳號",
+                sort: false,
+                style: {
+                    "width": "100px"
+                }
+            },
+            {
+                id: "NickName",
+                title: "會員暱稱",
+                sort: false,
+                style: {
+                    "width": "40px"
+                }
+            },
+            {
+                id: "A_1",
+                title: "帳號管理權限",
+                sort: true,
+                style: {
+                    "width": "50px"
+                },
+                action: function (value) {
+                    return value===1  ? "V" : "";
+                }
+            },
+            {
+                id: "A_2",
+                title: "編輯機構權限",
+                sort: true,
+                style: {
+                    "width": "50px"
+                },
+                action: function (value) {
+                    return value===1  ? "V" : "";
+                }
+            },
+            {
+                id: "A_3",
+                title: "回覆留言權限",
+                sort: true,
+                style: {
+                    "width": "50px"
+                },
+                action: function (value) {
+                    return value===1  ? "V" : "";
+                }
+            },
+            {
+                id: "ID",
+                title: "操作",
+                sort: false,
+                style: {
+                    "width": "30px"
+                },
+                action: function (value) {
+                    return "<button onclick='editAccount("+value+")'>編輯</button>";
+                }
+            }
+        ],
+        pageLimit: $("#table_page_size").val(),
+        dataUrl: "/backStage/account/getAccountTable"
+    });
+    function search(){
+        dataTable.reGet({
+            search: $("#searchBarText").val()
+        });
+    }
+    function editAccount(no){
+        console.log(no);
+    }
+</script>

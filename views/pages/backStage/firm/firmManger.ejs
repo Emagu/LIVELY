@@ -1,0 +1,27 @@
+<% value.forEach(function(firm){ %>
+    <li><a href="/front/firm?NO=<%= firm.NO%>"><%= firm.Name%></a><button onclick="editFirm(<%= firm.NO%>)">編輯</button><button onclick="deleteFirm(<%= firm.NO%>)">刪除</button></li>
+<% }); %>
+<button onclick="newFirm()">新增</button>
+<script>
+    function newFirm(){
+        location.href = "/backStage/firm/firmEdit?action=0";
+    }
+    function editFirm(no){
+        location.href = "/backStage/firm/firmEdit?action=1&NO="+no;
+    }
+    function deleteFirm(no){
+        $.post('/backStage/firm/deleteFirm', {
+            FirmNO: no
+        },function(data){
+            if (data != 'success') {
+                toastr.error('', data, {
+                    "positionClass": "toast-bottom-full-width",
+                    "timeOut": "3000",
+                    "closeButton": true
+                });
+            } else {
+                location.reload();
+            }
+        },'html');
+    }
+</script>

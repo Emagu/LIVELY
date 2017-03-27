@@ -5,6 +5,30 @@
 地址(結尾):<input type="text" id="firm_address" value="<%= value.addr%>"/><br/>
 市話:<input type="text" id="firm_phone" value="<%= value.phone%>"/><br/>
 傳真:<input type="text" id="firm_fax" value="<%= value.fax%>"/><br/>
+機構功能分類:
+    <select id="firm_type">
+        <option value='0' selected="selected">安養機構</option>
+        <option value='1'>養護機構</option>
+        <option value='2'>長期照顧中心</option>
+        <option value='3'>護理之家</option>
+    </select>
+<br/>
+長照2.0類型分類:
+    <select id="firm_type2">
+        <option value='0' selected="selected">A.社區整合服務中心</option>
+        <option value='1'>B.複合型日間照護中心</option>
+        <option value='2'>C.巷弄長照站</option>
+    </select>
+<br/>
+政府評鑑:
+    <select id="firm_level">
+        <option value='0' selected="selected">優</option>
+        <option value='1'>甲</option>
+        <option value='2'>乙</option>
+        <option value='3'>丙</option>
+    </select>
+<br/>
+平均價位:<input type="text" id="firm_price" value="<%= value.price%>" /><br />
 <textarea id="editer_area"></textarea>
 <button onclick="preview()">預覽</button><br />
 <script>
@@ -32,6 +56,15 @@
             $("#firm_country").val(<%= value.ctry%>).change();
         <% }else{ %>
             $("#firm_country").val(0).change();
+        <% } %>
+        <% if(value.type!=null){ %>
+            $("#firm_type").val(<%= value.type%>).change();
+        <% } %>
+        <% if(value.type2!=null){ %>
+            $("#firm_type2").val(<%= value.type2%>).change();
+        <% } %>
+        <% if(value.level!=null){ %>
+            $("#firm_level").val(<%= value.level%>).change();
         <% } %>
     });
     function editerInit(){
@@ -76,6 +109,10 @@
             + "&addr=" + $("#firm_address").val()
             + "&phone=" + $("#firm_phone").val()
             + "&fax=" + $("#firm_fax").val()
+            + "&type=" + $("#firm_type").val()
+            + "&type2=" + $("#firm_type2").val()
+            + "&level=" + $("#firm_level").val()
+            + "&price=" + $("#firm_price").val()
             + "&html=" + html
             + "&action=<%= value.action%>";
     }

@@ -5,6 +5,10 @@
 機構地址:<%= value.addr %><br>
 機構市話:<%= value.phone %><br>
 機構傳真:<%= value.fax %><br>
+平均價位:<%= value.price%><br />
+<p id="firm_type"></p>
+<p id="firm_type2"></p>
+<p id="firm_level"></p>
 <div id="firmView"></div>
 <div id="guestBook">
     <div class="guestHead">
@@ -22,12 +26,18 @@
 <button onclick="history.go(-1)">返回</button>
 <script>
     $(document).ready(function(){
+        var typeA = ["安養機構","養護機構","長期照顧中心","護理之家"];
+        var type2A = ["A.社區整合服務中心","B.複合型日間照護中心","C.巷弄長照站"];
+        var level = ["優","甲","乙","丙"];
+        $("#firm_type").html("機構功能分類:" + typeA[<%= value.type%>]);
+        $("#firm_type2").html("長照2.0類型分類:"+type2A[<%= value.type2%>]);
+        $("#firm_level").html("政府評鑑:"+level[<%= value.level%>]);
         $("#firmView").html(decodeURIComponent('<%= value.html %>'));
         $("#firm_city").html(TAR.getCity(<%= value.city %>));
         $("#firm_ctry").html(TAR.getCountry(<%= value.city %>,<%= value.ctry %>));
     });
     function editSumit() {
-        $.post('/firmManger/editSumit', {
+        $.post('/backStage/firm/editSumit', {
             no: "<%= value.no%>",
             title: "<%= value.title%>",
             city: "<%= value.city%>",
@@ -35,6 +45,10 @@
             addr: "<%= value.addr%>",
             phone: "<%= value.phone%>",
             fax: "<%= value.fax%>",
+            type: "<%= value.type%>",
+            type2: "<%= value.type2%>",
+            level: "<%= value.level%>",
+            price: "<%= value.price%>",
             html: "<%=value.html%>",
             action: '<%= value.action%>'
         }, function (status) {
