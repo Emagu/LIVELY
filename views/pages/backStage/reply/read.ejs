@@ -1,0 +1,78 @@
+<button onclick="location.href='/backStage/reply/unread'">未讀</button><button>已讀</button><br>
+<label>單頁顯示：</label>
+<select id="table_page_size" onchange='dataTable.resizePage($("#table_page_size").val())'>
+    <option value="10">10</option>
+    <option value="50">50</option>
+    <option value="100">100</option>
+</select>
+<label>搜尋類型：</label>
+<select id="table_search">
+    <option value="Title" selected="selected">標題</option>
+    <option value="Firm">機構名稱</option>
+</select>
+<label>搜尋：</label>
+<input type="text" id="searchBarText" />
+<button onclick="search()">搜尋</button>
+<br />
+<table id="table" width="100%"></table>
+<script>
+    dataTable.init({
+        TableID: "table",
+        columns: [
+            {
+                id: "ID",
+                title: "",
+                sort: false,
+                style: {
+                    "width": "20px"
+                },
+                action: function (value) {
+                    return "<button type='checkbox' value='"+value+"'/>";
+                }
+            },
+            {
+                id: "Title",
+                title: "標題",
+                sort: true,
+                style: {
+                    "width": "100px"
+                },
+                action: function (value) {
+                    return "<a href='"+value.href+"'>"+value.Name+"</a>";
+                }
+            },
+            {
+                id: "Firm",
+                title: "機構名稱",
+                sort: true,
+                style: {
+                    "width": "40px"
+                }
+            },
+            {
+                id: "time",
+                title: "時間",
+                sort: true,
+                style: {
+                    "width": "50px"
+                }
+            },
+            {
+                id: "A_2",
+                title: "編輯機構權限",
+                sort: true,
+                style: {
+                    "width": "50px"
+                }
+            }
+        ],
+        pageLimit: $("#table_page_size").val(),
+        dataUrl: "/backStage/reply/getReadTable"
+    });
+    function search(){
+        dataTable.reGet({
+            search: $("#searchBarText").val(),
+            searchType: $("#table_search").val(),
+        });
+    }
+</script>

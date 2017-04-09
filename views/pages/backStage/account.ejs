@@ -1,6 +1,26 @@
-
-
-
+<div class="member_box" id="member_edit">
+	<div class="member_box_top"></div>
+	<div class="member_box_scroll">
+		<form id="form_edit">
+			<div class="member_box_text1">
+	            會員帳號：<font id="member_edit_account"></font>
+            </div>
+            <div class="member_box_text2">
+	            會員暱稱：<font id="member_edit_nickname"></font>
+            </div>
+            <div class="clear"></div>   
+	        <div class="small_button">
+	            <input  class="member_box_input" name="member_edit_a_1" type="checkbox" />帳號管理權限<br>
+	            <input  class="member_box_input" name="member_edit_a_2" type="checkbox" />編輯機構權限<br>
+	            <input  class="member_box_input" name="member_edit_a_3" type="checkbox" />回覆留言權限<br>
+	        </div>
+	        <div class="all_button">
+	            <button type="button" class="button_red" id="member_edit_send">確認送出</button>
+	        </div>
+        </form>
+	</div>
+	<div class="member_box_bottom"></div>
+</div>
 <label>單頁顯示：</label>
 <select id="table_page_size" onchange='dataTable.resizePage($("#table_page_size").val())'>
     <option value="10">10</option>
@@ -100,6 +120,51 @@
         });
     }
     function editAccount(no){
-        console.log(no);
+        $.post("/backStage/account/getAccountDetail", {
+            NO:no
+        },
+        function(data) {
+            if (data == 'error') {
+                toastr.error('', "錯誤!!!", {
+                    "positionClass": "toast-bottom-full-width",
+                    "timeOut": "3000",
+                    "closeButton": true
+                });
+            } else {
+                $("#member_edit_account").text(data.Account);
+                $("#member_edit_nickname").text(data.NickName);
+                $("input[name='member_edit_a_1']").prop('checked', data.A_1 == 1 ? true : false);
+                $("input[name='member_edit_a_2']").prop('checked', data.A_2 == 1 ? true : false);
+                $("input[name='member_edit_a_3']").prop('checked', data.A_3 == 1 ? true : false);
+                $("#member_edit_send").click(function(){
+                    SendAccountEdit(data.ID);
+                });
+                hideFloat();
+                $(".member_box_bg").addClass("changememberopacity");
+                $("#member_edit").addClass("changemembertrue");
+                $("#member_edit").css({
+                    "left": SIZE_TYPE + "%"
+                });   
+            }
+        }, 'json');
+    }
+    function SendAccountEdit(NO){
+        $.post("/backStage/account/editAccountDetail", {
+            UserNO:NO,
+            AA1:$("input[name='member_edit_a_1']").prop("checked"),
+            AA2:$("input[name='member_edit_a_2']").prop("checked"),
+            AA3:$("input[name='member_edit_a_3']").prop("checked")
+        },
+        function(data) {
+            if (data == 'error') {
+                toastr.error('', "錯誤!!!", {
+                    "positionClass": "toast-bottom-full-width",
+                    "timeOut": "3000",
+                    "closeButton": true
+                });
+            } else {
+                location.reload();
+            }
+        }, 'html');
     }
 </script>

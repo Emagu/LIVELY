@@ -1,28 +1,31 @@
 var SIZE_TYPE = 15;
 $(window).resize(mq);
 $(document).ready(function() {
+    
+    
     mq();
-    $(".member_box_register").keypress(function(e) {
+    $("#member_box_register").keypress(function(e) {
         if (e.which == 13) {
             SendRegisterData();
         }
     });
-    $(".member_box_login").keypress(function(e) {
+    $("#member_box_login").keypress(function(e) {
         if (e.which == 13) {
             SendLoginData();
         }
     });
     $("#side").mouseover(function() {
-        $("#side img").attr("src", "/public/images/shop_hover.png");
+        $("#side img").attr("src", "/public/images/messagehover.png");
     });
     $("#side").mouseout(function() {
-        $("#side img").attr("src", "/public/images/shop.png");
+        $("#side img").attr("src", "/public/images/message.png");
     });
     $(".member_box_bg").click(hideFloat);
     $("#logout").click(logout);
     $("#backstage").click(backstage);
     $("#login").click(showLogin);
     $("#register").click(showRegister);
+    
 });
 function mq() {
     var myscreenwidth=document.documentElement.clientWidth;
@@ -75,19 +78,13 @@ function mq() {
 		SIZE_TYPE = 5;
     }
 }
-
 function hideFloat() {
     $(".member_box_bg").removeClass("changememberopacity");
-    $(".member_box_login").removeClass("changemembertrue");
-    $(".member_box_login").css({
-        "left": "150%"
-    });
-    $(".member_box_register").removeClass("changemembertrue");
-    $(".member_box_register").css({
+    $(".member_box").removeClass("changemembertrue");
+    $(".member_box").css({
         "left": "150%"
     });
 }
-
 function showLogin() {
     hideFloat();
     $('#form_login').validate({
@@ -101,12 +98,11 @@ function showLogin() {
         }
     });
     $(".member_box_bg").addClass("changememberopacity");
-    $(".member_box_login").addClass("changemembertrue");
-    $(".member_box_login").css({
+    $("#member_box_login").addClass("changemembertrue");
+    $("#member_box_login").css({
         "left": SIZE_TYPE + "%"
     });
 }
-
 function showRegister() {
     hideFloat();
     $('#form_register').validate({
@@ -138,12 +134,11 @@ function showRegister() {
         }
     });
     $(".member_box_bg").addClass("changememberopacity");
-    $(".member_box_register").addClass("changemembertrue");
-    $(".member_box_register").css({
+    $("#member_box_register").addClass("changemembertrue");
+    $("#member_box_register").css({
         "left": SIZE_TYPE + "%"
     });
 }
-
 function SendLoginData() {
     if ($('#form_login').valid() == true) {
         $.post("/front/login", {
@@ -163,7 +158,6 @@ function SendLoginData() {
             }, 'html');
     }
 }
-
 function SendRegisterData() {
     if ($('#form_register').valid() == true) {
         $.post("/front/register", {
@@ -189,13 +183,38 @@ function SendRegisterData() {
             }, 'html');
     }
 }
-
 function logout() {
     $.post("/front/logout", {}, function() {
         location.reload();
     }, 'html');
 }
-
 function backstage() {
     location.href="/backstage";
+}
+function sendMessage(RecipientNO,Message){//發送
+    $.post("/message/send",{
+        Message:Message,
+		SendTo:RecipientNO
+	},function(data){
+		if(data != 'success'){
+			toastr.error( '',data, {
+				"positionClass": "toast-bottom-full-width",
+				"timeOut": "3000",
+				"closeButton": true
+			});
+		}
+	},'html');
+}
+function updateReadStatus(no){
+    $.post("/message/updateReadStatus",{
+        no:no,
+	},function(data){
+		if(data != 'success'){
+			toastr.error( '',data, {
+				"positionClass": "toast-bottom-full-width",
+				"timeOut": "3000",
+				"closeButton": true
+			});
+		}
+	},'html');
 }

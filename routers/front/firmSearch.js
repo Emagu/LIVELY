@@ -9,19 +9,6 @@ router.use(bodyParser.urlencoded({
      // to support URL-encoded bodies
     extended: true
 }));
-router.use(function(req, res, next) {//權限認證
-    if(req.session._admin!=null) AccountLib.checkLoginBySession(req.session._admin)
-	    .then(function(data){
-    		req.session.nickName = data;
-    		req.session.save();
-    		next();
-    	},function(){
-		    next();
-	    });
-    else{
-        next();
-    }
-});
 router.get('/', function (req, res) {
     let db = new Sql.DB();
     db.select("F00","DEFAULT","NO");
@@ -65,13 +52,13 @@ router.get('/', function (req, res) {
         Render(res,req,null);
     }); 
 });
-
 router.get('*', ErrorRender);
 //method
 function Render(res,req,data) {
     res.render('layouts/front_layout', {
         Title: "搜尋機構",
-        Login: req.session.nickName,
+        Login: req.session._admin==null ? null : {name:req.session._admin.nickName,no:req.session._admin.userNO},
+        isManger: req.session._admin==null ? null : req.session._admin.isManger,
         CSSs: [
         ],
         JavaScripts: [

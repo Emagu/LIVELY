@@ -1,0 +1,248 @@
+/* Desktop --------------------------------------*/
+#search_wrap{
+	width:100%;
+	height:auto;
+	background:#a0ced9;
+	padding-bottom:50px;
+}
+#search_wrap_left{
+	width:60%;
+	height:auto;
+	margin-left:5%;
+	float:left;
+}
+.search_item_div_left{
+	width:5%;
+	height:100%;
+	float:left;
+	position:absolute;
+	background: white url(/public/images/img01.png) repeat;
+}
+.search_item_div_right{
+	width:85%;
+	height:100%;
+	position:relative;
+	margin-left:10%;
+}
+.search_item{
+	width:100%;
+	height:auto;
+	margin-top: 25px;
+	margin-bottom:10px;
+	background:white;
+	position:relative;
+	box-shadow:0px 1px 4px rgba(41, 51, 57, 0.5);
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	overflow:hidden;
+}
+.search_item_top{
+	width:100%;
+	margin-top:20px;
+}
+.search_item_middle{
+	padding-bottom:20px;
+}
+.search_item_titlescore{
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-left:10px;
+	padding-right:10px;
+	background: #fcf5c7;
+	float:left;
+	box-shadow:-2px -2px 2px rgba(41, 51, 57, 0.5);
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+.search_item_titlescore .item_text1{
+	font-size:35px;
+	font-family: '微軟正黑體';
+	letter-spacing: 2px;
+	color: #ff686b;
+	font-weight: bol
+}
+.search_item_titlediv{
+	width:85%;
+	margin-left:20px;
+	float:left;
+}
+.search_item_titlediv .item_text1{
+	color:black;
+	font-size:25px;
+}
+.search_item_textdiv{
+	margin-left:0%;
+}
+.item_text1{
+	font-size: 19px;
+	font-family: '微軟正黑體';
+	letter-spacing: 2px;
+	color: black;
+	font-weight: bold;
+}
+.item_text2{
+	font-size: 17px;
+	font-family: '微軟正黑體';
+	letter-spacing: 2px;
+	color: #555;
+	font-weight: bold;
+}
+.item_text3{
+	font-size: 15px;
+	font-family: '微軟正黑體';
+	letter-spacing: 2px;
+	color: #555;
+}
+.item_text3b{
+	color:black;
+}
+.search_item_pic{
+	width:40%;
+	margin-left:5%;
+	margin-top:20px;
+	float:left;
+}
+.search_item_pic img{
+	width:100%;
+}
+.pic_left_textdiv{
+	float:left;
+	width:50%;
+	margin-top:20px;
+	margin-bottom:20px;
+	margin-left:0%;
+}
+.pic_left_textdiv dt{
+	clear: left;
+	float:left;
+	width:40%;
+}
+.pic_left_textdiv dd{
+	float:left;
+	width:60%;
+	line-height:1.8em;
+	border-bottom: 2px dashed #ddd;
+}
+.search_item_bottom{
+	margin-top:20px;
+	margin-bottom:30px;
+}
+.chat_text{
+	padding-top:10px;
+	padding-bottom:10px;
+}
+.search_item_bottom button{
+	margin-top:10px;
+}
+.userid{
+	color:#FF8888;
+}
+.usertext{
+	margin-left:5%;
+	color:#555;
+}
+.pmdiv{
+	margin-left:0%;
+	margin-top:10px;
+}
+.pmid{
+	color:#003C9D;
+	font-weight:bold;
+}
+.floatright{
+	float:right;
+}
+.pmtext{
+	width:30%;
+	margin-left:5%;
+	color:#555;
+}
+.pmreply_cancel_button{
+	display:none;
+	margin-left:10px;
+}
+.pmreply_enter_button{
+}
+.pmreply{
+	width:100%;
+	height:100px;
+	border: 2px dashed #555;
+	padding:5px;
+	margin-bottom:10px;
+	display:none;
+}
+#CommentMessage{
+	width:100%;
+	height:200px;
+	border: 2px dashed #ddd;
+	padding:20px;
+
+#search_wrap_right{
+	width:28%;
+	height:auto;
+	margin-left:2%;
+	float:left;
+}
+.div_top{
+	width:100%;
+	height:30px;
+	position:relative;
+	background: white url(/public/images/img01.png) repeat;
+	border-top-left-radius:8px;
+	border-top-right-radius:8px;
+	box-shadow:0px 0px 4px rgba(41, 51, 57, 0.5);
+}
+.other1{
+	margin-top: 25px;
+}
+.other1 .wrap{
+	background-color: #ff686b;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	box-sizing: border-box;
+	color: rgb(255, 255, 255);
+	font-family: "微軟正黑體",sans-serif;
+	font-size: 14px;
+	line-height: 28.8px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	text-align: center;
+	width: 100%;
+	box-shadow:0px 1px 4px rgba(41, 51, 57, 0.5);
+}
+.other2{
+	margin-top: 10px;
+}
+.other2 .wrap{
+	background-color:#fcf5c7;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	box-sizing: border-box;
+	color: rgb(255, 255, 255);
+	font-family: "微軟正黑體",sans-serif;
+	font-size: 14px;
+	line-height: 28.8px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	text-align: center;
+	width: 100%;
+	box-shadow:0px 1px 4px rgba(41, 51, 57, 0.5);
+}
+#FB_div_top{
+	width:340px;
+	height:30px;
+	background: white url(/public/images/img01.png) repeat;
+	border-top-left-radius:8px;
+	border-top-right-radius:8px;
+	box-shadow:0px 0px 4px rgba(41, 51, 57, 0.5);
+}
+#FB_div{
+	margin-bottom:50px;
+	margin-top:10px;
+}

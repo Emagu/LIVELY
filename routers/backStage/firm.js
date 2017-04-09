@@ -231,9 +231,9 @@ router.post('/deleteFirm',function(req, res) {
 });
 router.get('*',ErrorRender);
 function Render(res,req,firmList) {
-    res.render('layouts/backStage_layout', {
+    res.render('layouts/backStage_layout2', {
         Title: "機構管理-機構列表",
-        Login:req.session._admin.nickName,
+        Login: req.session._admin.nickName,
         Authority: req.session._admin.Authority,
         CSSs: [
         ],
@@ -241,18 +241,15 @@ function Render(res,req,firmList) {
         ],
         Include: [
             {url:"../pages/backStage/firm/firmManger",value:firmList}
-        ],
-        Script: [	
-            
         ]
     });
 }
 function EditRender(res,req,firm) {
     if(firm==null) firm = {action:0};//新增
     else firm.action = 1;//修改
-    res.render('layouts/backStage_layout', {
+    res.render('layouts/backStage_layout2', {
         Title: "機構管理-機構編輯",
-        Login:req.session._admin.nickName,
+        Login: req.session._admin.nickName,
         Authority: req.session._admin.Authority,
         CSSs: [
         ],
@@ -262,26 +259,21 @@ function EditRender(res,req,firm) {
         ],
         Include: [
             {url:"../pages/backStage/firm/firmEdit",value:firm}
-        ],
-        Script: [	
-            
         ]
     });
 }
 function PreviewRender(res,req,firm){
     res.render('layouts/front_layout', {
         Title: firm.title,
-        Login:req.session._admin.nickName,
+        Login: req.session._admin.nickName,
         CSSs: [
-            
+            "/public/css/firm.css"
         ],
         JavaScripts: [
             "/public/js/Taiwan_Administrative_Region.js"
         ],
         Include: [
             { url: "../pages/backStage/firm/firmPre", value: firm }
-        ],
-        Script: [	
         ]
     });
 }
@@ -293,10 +285,6 @@ function ErrorRender(req,res) {//無畫面
         JavaScripts: [
         ],
         Include: [
-            
-        ],
-        Script: [	
-            
         ]
     });
 }

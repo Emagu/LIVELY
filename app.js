@@ -21,7 +21,8 @@ app.use('/public', express.static(__dirname + '/public'));//開放資料
 //router init
 var Router = {
     front: getRouter("front"),
-    backStage: getRouter("backStage")
+    backStage: getRouter("backStage"),
+    message: getRouter("message")
 };
 //設定router
 app.get('/',function(req, res) {
@@ -29,6 +30,7 @@ app.get('/',function(req, res) {
 });
 app.use('/front', Router.front);
 app.use('/backStage', Router.backStage);
+app.use('/message', Router.message);
 app.get('*', function(req, res){
     ErrorRender(res);
 }); 

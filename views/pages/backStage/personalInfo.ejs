@@ -1,0 +1,124 @@
+<div class="member_box" id="email_edit">
+	<div class="member_box_top">
+	    <font>修改信箱</font>
+	</div>
+	<div class="member_box_scroll">
+		<div class="member_box_text1">
+	        輸入新的信箱：<input class="member_box_input" id="new_email" />
+        </div>
+        <div class="clear"></div>   
+	    <div class="all_button">
+	        <button type="button" class="button_red" onclick="sendEmailEdit()">確認送出</button>
+        </div>
+	</div>
+	<div class="member_box_bottom"></div>
+</div>
+<div class="member_box" id="nickname_edit">
+	<div class="member_box_top">
+	    <font>修改暱稱</font>
+	</div>
+	<div class="member_box_scroll">
+		<div class="member_box_text1">
+	        輸入新的暱稱：<input class="member_box_input" id="new_nickname" />
+        </div>
+        <div class="clear"></div>   
+	    <div class="all_button">
+	        <button type="button" class="button_red" onclick="sendNickNameEdit()">確認送出</button>
+        </div>
+	</div>
+	<div class="member_box_bottom"></div>
+</div>
+<div class="member_box" id="phone_edit">
+	<div class="member_box_top">
+	    <font>修改手機</font>
+	</div>
+	<div class="member_box_scroll">
+		<div class="member_box_text1">
+	        輸入新的手機:
+	        <input  class="member_box_input" id="new_phone">
+        </div>
+        <div class="clear"></div>   
+	    <div class="all_button">
+	        <button type="button" class="button_red" onclick="sendPhoneEdit()">確認送出</button>
+        </div>
+	</div>
+	<div class="member_box_bottom"></div>
+</div>
+<p>帳號:<%= value.account%></p>
+<p>信箱:<%= value.Email%><button onclick="editEmail()">修改</button></p>
+<p>暱稱:<%= value.nickname%><button onclick="editNickName()">修改</button></p>
+<p>手機:<%= value.phone%><button onclick="editPhone()">修改</button></p>
+<script>
+    function editEmail(){
+        $(".member_box_bg").addClass("changememberopacity");
+        $("#email_edit").addClass("changemembertrue");
+        $("#email_edit").css({
+            "left": SIZE_TYPE + "%"
+        });   
+    }
+    function editNickName(){
+        $(".member_box_bg").addClass("changememberopacity");
+        $("#nickname_edit").addClass("changemembertrue");
+        $("#nickname_edit").css({
+            "left": SIZE_TYPE + "%"
+        });   
+    }
+    function editPhone(){
+        $(".member_box_bg").addClass("changememberopacity");
+        $("#phone_edit").addClass("changemembertrue");
+        $("#phone_edit").css({
+            "left": SIZE_TYPE + "%"
+        });   
+    }
+    function sendEmailEdit(){
+        $.post("/backStage/personalInfo/editEmail", {
+            userNO:<%= value.id%>,
+            email: $("#new_email").val()
+        },
+        function(data) {
+            if (data == 'error') {
+                toastr.error('', "錯誤!!!", {
+                    "positionClass": "toast-bottom-full-width",
+                    "timeOut": "3000",
+                    "closeButton": true
+                });
+            } else {
+                location.reload();
+            }
+        }, 'html');
+    }
+    function sendNickNameEdit(){
+        $.post("/backStage/personalInfo/editNickName", {
+            userNO:<%= value.id%>,
+            nickname: $("#new_nickname").val()
+        },
+        function(data) {
+            if (data == 'error') {
+                toastr.error('', "錯誤!!!", {
+                    "positionClass": "toast-bottom-full-width",
+                    "timeOut": "3000",
+                    "closeButton": true
+                });
+            } else {
+                location.reload();
+            }
+        }, 'html');
+    }
+    function sendPhoneEdit(){
+        $.post("/backStage/personalInfo/editPhone", {
+            userNO:<%= value.id%>,
+            phone: $("#new_phone").val()
+        },
+        function(data) {
+            if (data == 'error') {
+                toastr.error('', "錯誤!!!", {
+                    "positionClass": "toast-bottom-full-width",
+                    "timeOut": "3000",
+                    "closeButton": true
+                });
+            } else {
+                location.reload();
+            }
+        }, 'html');
+    }
+</script>

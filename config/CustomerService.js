@@ -1,3 +1,3 @@
 module.exports = {
-    AccountNO: 6
+    AccountNO: 4
 };

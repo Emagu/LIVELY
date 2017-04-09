@@ -12,21 +12,6 @@ router.use(bodyParser.urlencoded({
      // to support URL-encoded bodies
     extended: true
 }));
-router.use(function(req, res, next) {//權限認證
-    if(req.session._admin!=null) AccountLib.checkLoginBySession(req.session._admin)
-	    .then(function(data){
-    		req.session.nickName = data;
-    		req.session.save();
-    		next();
-    	},function(){
-    	    req.session.save();
-		    next();
-	    });
-    else{
-        req.session.save();
-        next();
-    }
-});
 router.get('/', function (req, res) {
     if(req.query.NO==null){
         ErrorRender(req,res);
@@ -150,7 +135,7 @@ router.post('/commentSumit',function(req, res){
                 }, 5).then(function(data){
                     res.send("success");
                 },function(err) {
-                    console.log(err);
+                    console.error(err);
                     res.send("留言失敗");
                 });
             }else{
@@ -176,7 +161,7 @@ router.post('/reply',function(req, res){
     }else if(req.body.GusetBookNO == null){
         res.send("空留言");
     }else{
-        AccountLib.getAuthority(req.session._admin,"03").then(function(){
+        AccountLib.getAuthority(req.session,"03").then(function(){
             var DB = new Sql.DB();
             var updateData = [
                 {
@@ -198,7 +183,7 @@ router.post('/reply',function(req, res){
             }, 6).then(function(data){
                 res.send("success");
             },function(err) {
-                console.log(err);
+                console.error(err);
                 res.send("留言失敗");
             });
         },function(){
@@ -212,7 +197,7 @@ router.post('/deleteReply',function(req, res) {
     }else if(req.body.GusetBookNO == null){
         res.send("空留言");
     }else{
-        AccountLib.getAuthority(req.session._admin,"03").then(function(){
+        AccountLib.getAuthority(req.session,"03").then(function(){
             var DB = new Sql.DB();
             var updateData = [{
                     key:"GB004",
@@ -226,7 +211,7 @@ router.post('/deleteReply',function(req, res) {
             }, 7).then(function(data){
                 res.send("success");
             },function(err) {
-                console.log(err);
+                console.error(err);
                 res.send("失敗");
             });
         },function(){
@@ -241,7 +226,7 @@ router.post('/deleteComment',function(req, res) {
     }else if(req.body.GusetBookNO == null){
         res.send("空留言");
     }else{
-        AccountLib.getAuthority(req.session._admin,"03").then(function(){
+        AccountLib.getAuthority(req.session,"03").then(function(){
             var DB = new Sql.DB();
             var updateData = [{
                     key:"GB003",
@@ -255,7 +240,7 @@ router.post('/deleteComment',function(req, res) {
             }, 8).then(function(data){
                 res.send("success");
             },function(err) {
-                console.log(err);
+                console.error(err);
                 res.send("失敗");
             });
         },function(){
@@ -269,9 +254,10 @@ router.get('*', ErrorRender);
 function Render(res,req,firm,guestBook,isManger) {
     res.render('layouts/front_layout', {
         Title: firm.title,
-        Login: req.session.nickName,
+        Login: req.session._admin==null ? null : {name:req.session._admin.nickName,no:req.session._admin.userNO},
+        isManger: req.session._admin==null ? null : req.session._admin.isManger,
         CSSs: [
-            
+            "/public/css/firm.css"
         ],
         JavaScripts: [
             "/public/js/Taiwan_Administrative_Region.js"

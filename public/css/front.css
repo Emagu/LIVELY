@@ -77,7 +77,6 @@ html{-webkit-text-size-adjust: none;}
 		padding:5px;
 		float:right;
 	}
-	
 	#login,#backstage{
 		float:left;
 		width:40%;
@@ -93,7 +92,7 @@ html{-webkit-text-size-adjust: none;}
 	#login:hover, #register:hover{
 		color:#EB655D;
 	}
-	.member_box_login, .member_box_register{
+	.member_box {
 		position:fixed;
 		width:40%;
 		height:70%;
@@ -273,13 +272,116 @@ html{-webkit-text-size-adjust: none;}
 	  margin-top:10%;
 	}
 
-
+	/*側邊聊天窗*/
 	#side{
 		position: fixed;
 		top:85%;
 		right:0%;
 		width:8%;
 		z-index:1001; 
+	}
+	#side_hidden_top{
+		width:100%;
+		height:30px;
+		position:relative;
+		background: white url(../images/img01.png) repeat;
+		border-top-left-radius:8px;
+		border-top-right-radius:8px;
+		box-shadow:0px 0px 4px rgba(41, 51, 57, 0.5);
+	}
+	#side_hidden_title_pm, #side_hidden_title_user{
+		background:white;
+		font-size: 15px;
+		font-family: '微軟正黑體';
+		letter-spacing: 2px;
+		color: #555;
+		text-align: center;
+	}
+	#side_hidden_exit img{
+		position:absolute;
+		right:0%;
+		width:10%;
+		cursor: pointer;
+	}
+	.user_message{
+		margin-top:5px;
+		color:#FF8888;
+	}
+	.pm_message{
+		margin-top:5px;
+		color:#003C9D;
+	}
+	.mine{
+		float:right;
+	}
+	.side_hidden_pm{
+		position:fixed;
+		width:20%;
+		right:1%;
+		height:60%;
+		bottom:0%;
+		border-top-left-radius:8px;
+		border-top-right-radius:8px;
+		box-shadow:0px 0px 4px rgba(41, 51, 57, 0.5);
+		background:#FFF3EE;
+		z-index:1002;
+		font-family: '微軟正黑體';
+		display: none;
+	}
+	.side_showpeople{
+		position:absolute;
+		width:100%;
+		height:100%;
+		z-index:1003;
+		background:#FFF3EE;
+		overflow:auto;
+	}
+	.showpeople_user{
+		padding:10px;
+		border-bottom: 2px dashed #ddd;
+	}
+	.showpeople_user:hover{
+		background:#FFFAF4;
+	}
+	.showpeople_user_id{
+		color:#FF8888;
+		cursor:pointer;
+		margin-left:10px;
+	}
+	.showpeople_user_read{
+		position:relative;
+		margin-right:10px;
+		float:right;
+		color:#555;
+	}
+	.showpeople_user_delete img{
+		position:relative;
+		float:left;
+		width:10%;
+		cursor:pointer;
+	}
+	.side_content_pm{
+		position:absolute;
+		width:100%;
+		height: 90%;
+		z-index:1003;
+		display:none;
+		overflow:auto;
+	}
+	.side_content_user{
+		position:absolute;
+		width:100%;
+		height: 90%;
+		z-index:1003;
+		overflow:auto;
+	}
+	.input_message{
+		width: 100%;
+		position: absolute;
+		height: 10%;
+		bottom: 0%;
+		font-size: 15px;
+		
 	}
 
 	.container {
@@ -458,6 +560,9 @@ html{-webkit-text-size-adjust: none;}
 		padding-top: 20px;
 		bottom:0px;
 		width:100%;
+		background: white url(../images/img01.png) repeat;
+		box-shadow:0px 0px 4px rgba(41, 51, 57, 0.5);
+		z-index:100;
 	}
 	#footerpic{
 		position:relative;

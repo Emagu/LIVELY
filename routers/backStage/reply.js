@@ -22,7 +22,7 @@ router.use(function(req, res, next) {//權限認證
 router.get('/', function (req, res) {
     Render(res,req);
 });
-router.post("/getAccountTable",function(req,res){
+router.post("/getReadTable",function(req,res){
     let DB = new SQL.DB();
     let pageLimit = parseInt(req.body.pageLimit);//單頁數量
     let pages = parseInt(req.body.pages);//所選頁數
@@ -31,11 +31,16 @@ router.post("/getAccountTable",function(req,res){
     DB.select("UserAccount.UA00", "DEFAULT", "ID");
     DB.select("UserAccount.UA01", "DECRYPT", "Account");
     DB.select("UserAccount.UA06", "DECRYPT", "NickName");
-    DB.select("AccountAuthority.AA01", "DEFAULT", "A_1");
-    DB.select("AccountAuthority.AA02", "DEFAULT", "A_2");
-    DB.select("AccountAuthority.AA02", "DEFAULT", "A_3");
-    if(req.body.search !=null){
-        DB.where("UserAccount.UA01","%"+req.body.search+"%","LIKE","AND","DEFAULT","DECRYPT");
+    if(req.body.search !=null && req.body.searchType != null){
+        switch (req.body.searchType) {
+            case 'Title':
+                DB.where("UserAccount.UA01","%"+req.body.search+"%","LIKE","AND","DEFAULT","DECRYPT");
+                break;
+            case 'Firm':
+                DB.where("UserAccount.UA01","%"+req.body.search+"%","LIKE","AND","DEFAULT","DECRYPT");
+                break;
+        }
+        
     }
     if(firstSort != null) {
         if (sortColums.hasOwnProperty(firstSort)){
@@ -71,89 +76,6 @@ router.post("/getAccountTable",function(req,res){
         console.error(err);
         res.json("搜尋失敗");
     }); 
-});
-router.post("/getAccountDetail",function(req,res){
-    let DB = new SQL.DB();
-    DB.select("UserAccount.UA00", "DEFAULT", "ID");
-    DB.select("UserAccount.UA01", "DECRYPT", "Account");
-    DB.select("UserAccount.UA06", "DECRYPT", "NickName");
-    DB.select("AccountAuthority.AA01", "DEFAULT", "A_1");
-    DB.select("AccountAuthority.AA02", "DEFAULT", "A_2");
-    DB.select("AccountAuthority.AA02", "DEFAULT", "A_3");
-    DB.where("UserAccount.UA00",req.body.NO);
-    DB.join("AccountAuthority","AccountAuthority.UA00=UserAccount.UA00");
-    DB.get("UserAccount").then(function (Data) {
-        if(Data.length>0){
-            res.json(Data[0]);
-        }else{
-            res.json("error");
-        }
-    });
-});
-router.post("/editAccountDetail",function(req, res) {
-    let DB = new SQL.DB();
-    let updateArray = [];
-    if(req.body.AA1 == "true" || req.body.AA1 == "false"){
-        updateArray.push({
-            key:"AA01",
-            value:req.body.AA1 == "true" ? 1 : 0
-        });
-    }
-    if(req.body.AA2 == "true" || req.body.AA2 == "false"){
-        updateArray.push({
-            key:"AA02",
-            value:req.body.AA2 == "true" ? 1 : 0
-        });
-    }
-    if(req.body.AA3 == "true" || req.body.AA3 == "false"){
-        updateArray.push({
-            key:"AA03",
-            value:req.body.AA3 == "true" ? 1 : 0
-        });
-    }
-    if(updateArray.length > 0 && req.body.UserNO != null){
-        updateArray.push({
-            key:"AA000",
-            value:Tool.getTimeZone()
-        });
-        DB.select(1);
-        DB.where("UA00",req.body.UserNO);
-        DB.get("AccountAuthority").then(function(status){
-            DB = new SQL.DB();
-            if(status.length>0){
-                DB.where("UA00",req.body.UserNO);
-                DB.update(updateArray,"AccountAuthority",{
-                    userNO: req.session._admin.userNO,
-                    IP: req.headers['x-forwarded-for'] || req.connection.remoteAddress
-                },10).then(function(){
-                    res.send("success");
-                },function(e){
-                    console.error(e);
-                    res.send("修改錯誤");
-                });
-            }else{
-                updateArray.push({
-                    key:"UA00",
-                    value:req.body.UserNO
-                });
-                DB.insert(updateArray,"AccountAuthority",{
-                    userNO: req.session._admin.userNO,
-                    IP: req.headers['x-forwarded-for'] || req.connection.remoteAddress
-                },11).then(function(){
-                    res.send("success");
-                },function(e){
-                    console.error(e);
-                    res.send("修改錯誤");
-                });
-            }
-        },function(e){
-            console.error(e);
-            res.send("資料庫錯誤");
-        });
-        
-    }else{
-        res.send("success");
-    }
 });
 router.get('*',ErrorRender);
 function Render(res,req) {

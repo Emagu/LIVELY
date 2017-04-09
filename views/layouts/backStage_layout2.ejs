@@ -7,7 +7,6 @@
 		<link rel="stylesheet" href="/public/css/front.css">
 		<link rel="stylesheet" href="/public/js/toastr/toastr.min.css">
 		<script src="/public/js/jquery.js"></script>
-		<script src="/public/js/socket.io.js"></script>
 		<script src="/public/js/modernizr.custom.97074.js"></script>
 		<script src="/public/js/front.js"></script>
 		<script src="/public/js/jquery.validate.js"></script>
@@ -18,126 +17,6 @@
 		<% JavaScripts.forEach(function(JavaScript){ %>
 			<script src=<%= JavaScript%>></script>
 		<% });%>
-		<% if(Login!=null){%>
-			<script>
-				$(document).ready(function() {
-    				$("#side_hidden_exit").click(closeMessage);
-				});
-				<% if(isManger){ %>
-					var hiddenMessage = [];
-					var MessageViewing = 0;
-					var ReadMessageing = false;
-					function openMessage(){//搜尋訊息列表
-						ReadMessageing = true;
-					    $.post("/message/getMessageList", {}, function(data) {
-					        if(typeof data === "object"){
-					            var MessageList = [];
-					            $(".side_showpeople").empty();
-					            data.forEach(function(value){
-					                if(hiddenMessage[value.no] == null){
-					                    if(MessageList[value.no]==null){
-					                    	MessageList[value.no] = 1 - value.isRead;
-					                        $(".side_showpeople").append('<div class="showpeople_user">'
-					    							+'<span class="showpeople_user_delete" onclick="deleteMessage('+value.no+')"><img src="/public/images/delete.png"></span>'
-					    							+"<span class='showpeople_user_id' onclick='showMessage("+value.no+',"'+value.nickName+'")'+"'>"+value.nickName+"</span>"
-					    							+'<span class="showpeople_user_read"><font color="#FF8888" id="unreadMsgCount_'+value.no+'">'+MessageList[value.no]+'</font> 則未讀</span>'
-					    						+'</div>');
-					    					
-					                    }else{
-					                        MessageList[value.no] += 1 - value.isRead;
-					                        $('#unreadMsgCount_'+value.no).text(MessageList[value.no]);
-					                    }
-					                }
-					            });
-					        }
-					    }, 'json');
-					    $(".side_content_pm").slideUp();
-					    $(".side_showpeople").slideDown();
-					    $(".side_hidden_pm").slideDown();
-					}
-					function closeMessage(){
-						ReadMessageing = false;
-					    $(".side_hidden_pm").slideUp();
-					}
-					function deleteMessage(no){
-					    hiddenMessage[no] = true;
-					    openMessage();
-					}
-					function showMessage(no,name){//搜尋訊息詳細
-					    $.post("/message/getMessage", {
-					        no:no
-					    }, function(data) {
-					        if(typeof data === "object"){
-					            $("#side_hidden_title_pm").text(name);
-					            MessageViewing = no;
-					            data.forEach(function(value){
-					                if(value.sender==no){//接收
-					                	if(value.isRead==0) updateReadStatus(value.no);
-					                    $(".output_message").append('<div class="user_message">'+value.text+'</div><div class="clear"></div>');
-					                }else{//發送
-					                    $(".output_message").append('<div class="pm_message mine">'+value.text+'</div><div class="clear"></div>');
-					                }
-					            });
-					            $(".input_message" ).on( "keydown", function( event ) {
-					            	if(event.keyCode==13) {
-					            		$(".output_message").append('<div class="pm_message mine">'+$(".input_message").val()+'</div><div class="clear"></div>');
-					            		sendMessage(no,$(".input_message").val());
-					            		$(".input_message").val("");
-					            	}
-					            });
-					            $(".side_showpeople").slideUp(null,function(){
-					                $(".side_content_pm").slideDown();
-					            });
-					        }
-					    }, 'json');
-					}
-					var SOCKET = io();
-					SOCKET.on("SendMessage",function(msg){//接收
-						if(MessageViewing==msg.SenderNO){
-							if(ReadMessageing) updateReadStatus(msg.NO);
-				        	$(".output_message").append('<div class="user_message">'+msg.Message+'</div><div class="clear"></div>');
-				        }
-					});
-				<% }else{ %>
-						var ReadMessageing = false;
-						function openMessage(){
-							ReadMessageing = true;
-							$.post("/message/getMessage", {}, function(data) {
-						        if(typeof data === "object"){
-						            data.forEach(function(value){
-						                if(value.sender!=<%= Login.no%>){//接收
-						                	if(value.isRead==0) updateReadStatus(value.no);
-						                    $(".output_message").append('<div class="pm_message">'+value.text+'</div><div class="clear"></div>');
-						                }else{//發送
-						                    $(".output_message").append('<div class="user_message mine">'+value.text+'</div><div class="clear"></div>');
-						                }
-						            });
-						            $(".input_message" ).on( "keydown", function( event ) {
-						            	if(event.keyCode==13) {
-						            		$(".output_message").append('<div class="user_message mine">'+$(".input_message").val()+'</div><div class="clear"></div>');
-						            		sendMessage(null,$(".input_message").val());
-						            		$(".input_message").val("");
-						            	}
-						            });
-						            
-						        }
-						        $(".side_content_pm").slideUp();
-								$(".side_showpeople").slideDown();
-								$(".side_hidden_pm").slideDown();
-						    }, 'json');
-						}
-						function closeMessage(){
-							ReadMessageing = false;
-						    $(".side_hidden_pm").slideUp();
-						}
-						var SOCKET = io();
-						SOCKET.on("SendMessage",function(msg){//接收
-							if(ReadMessageing) updateReadStatus(msg.NO);
-					        $(".output_message").append('<div class="pm_message">'+msg.Message+'</div><div class="clear"></div>');
-						});
-				<% } %>
-			</script>
-		<% } %>
 	</head>
 	<body>
 		<div style="position:relative; min-height:100%;">
@@ -233,58 +112,35 @@
 						<span id="login"><a>登入</a></span>
 						<span id="register"><a>註冊</a></span>
 					<% }else{ %>
-						<span id="backstage"><a><%= Login.name%></a></span>
+						<span id="backstage"><a><%= Login%></a></span>
 						<span id="logout"><a>登出</a></span>
 					<% } %>
 				</div>
 				<div class="clear"></div>
 			</div>
 			<div id="wrap_top_hide"></div>
-			<% if(Login!=null){ %>
-				<div id="side">
-				    <a onclick="openMessage()">
-				    	<img src="/public/images/message.png">
-				    </a>
+			<div id="wrap_body">
+				<div id="wrap_left">
+					<% if(Authority.AA01!=null){ %>
+						<li><a href="/backStage/account">會員管理</a></li><br/>
+					<% } %>
+					<% if(Authority.AA02!=null){ %>
+						<li><a href="/backStage/firm">機構管理</a></li><br/>
+					<% } %>
+					<% if(Authority.AA03!=null){ %>
+						<li><a href="">機構留言</a></li><br/>
+					<% } %>
+					<li><a href="/backStage/personalInfo">個人資料</a></li><br/>
+					<div class="clear"></div>
 				</div>
-				<% if(isManger){ %>
-					<div class="side_hidden_pm">
-						<div id="side_hidden_top">
-							<div id="side_hidden_exit">
-								<img src="/public/images/exit.png">
-							</div>
-						</div>
-						<div class="side_showpeople"></div>
-						<div class="side_content_pm">
-							<div id="side_hidden_title_pm"></div>
-							<span onclick="openMessage()">返回</span>
-							<div class="output_message"></div>
-							<input class="input_message" value="" type="text">
-						</div>
-					</div>
-				<% }else{ %>
-					<div class="side_hidden_pm">
-						<div id="side_hidden_top">
-							<div id="side_hidden_exit">
-								<a><img src="/public/images/exit.png"></a>
-							</div>
-						</div>
-						<div id="side_hidden_title_user">
-							- 有任何問題直接留言，客服人員幫您解決 -
-						</div>
-						<div id="side_content_pm" style:"display:block">
-							<div class="output_message">
-								<div class="pm_message">
-									您好，有甚麼我能為您服務的嗎?
-								</div>
-							</div>
-							<input class="input_message" name="m_login_account" value="" type="text">
-						</div>
-					</div>
-				<% } %>
-			<% } %>
-			<% Include.forEach(function(IObject){ %>
-				<%- include(IObject.url,{value:IObject.value}) %>
-			<% }); %>
+				<div class="wrap_body_hr"></div>
+				<div id="wrap_right">
+					<% Include.forEach(function(IObject){%>
+						<%- include(IObject.url,{value:IObject.value})%>
+					<%});%>
+				</div>
+				<div class="clear"></div>
+			</div>
 			<div class="clear"></div>
 			<div id="white_box"></div>
 	        <div id="side">

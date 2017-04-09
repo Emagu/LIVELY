@@ -6,6 +6,7 @@ const AccountLib = require("../lib/Account");
 let Router = {
     firm: getRouter("firm"),
     account: getRouter("account"),
+    personalInfo: getRouter("personalInfo")
 };
 router.use(bodyParser.json());       // to support JSON-encoded bodies
 router.use(bodyParser.urlencoded({
@@ -13,17 +14,13 @@ router.use(bodyParser.urlencoded({
     extended: true
 }));
 router.use(function(req, res, next) {//權限認證
-  if(req.session._admin != null)  AccountLib.checkLoginBySession(req.session._admin).then(function(data){
-    req.session._admin.nickName = data;
-    req.session.save();
-    next();
-  },AccountLib.logout);  
+  if(req.session._admin != null)  AccountLib.checkLoginBySession(req.session._admin).then(next,AccountLib.logout);  
   else res.redirect('/front');
 });
 router.get('/', function (req, res) {
     AccountLib.getAuthorityList(req.session._admin).then(function(data){
         req.session._admin.Authority = data;
-        req.session.save();
+        req.session._admin.save();
         Render(res,req);
     },function(err){
         console.error(err);
@@ -32,6 +29,8 @@ router.get('/', function (req, res) {
 });
 router.use('/firm', Router.firm);
 router.use('/account', Router.account);
+router.use('/personalInfo', Router.personalInfo);
+
 router.get('*', function (req, res) {//404~
     ErrorRender(res);
 });
@@ -41,9 +40,9 @@ function getRouter(url) {
     return router;
 }
 function Render(res,req,authority) {
-    res.render('layouts/backStage_layout', {
+    res.render('layouts/backStage_layout2', {
         Title: "管理後台",
-        Login:req.session._admin.nickName,
+        Login: {name:req.session._admin.nickName,no:req.session._admin.userNO},
         Authority: req.session._admin.Authority,
         CSSs: [
         ],
@@ -51,8 +50,6 @@ function Render(res,req,authority) {
         ],
         Include: [
             { url: "../pages/backStage/backStage", value: {} }
-        ],
-        Script: [	
         ]
     });
 }
@@ -65,9 +62,6 @@ function ErrorRender(res) {//無畫面
         ],
         //為了傳送Value所以根目錄一樣是./views開始算
         Include: [
-            
-        ],
-        Script: [	
             
         ]
     });

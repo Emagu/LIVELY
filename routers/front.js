@@ -15,14 +15,7 @@ router.use(bodyParser.urlencoded({
      // to support URL-encoded bodies
     extended: true
 }));
-router.get('/', function (req, res) {
-	AccountLib.checkLoginBySession(req.session._admin)
-	.then(function(data){
-		Render(res,data);
-	},function(){
-		Render(res,null);
-	});
-});
+router.get('/', Render);
 /**
  * 登入
  * @param {string} Account   : 使用者帳號(UA01)
@@ -36,7 +29,8 @@ router.post("/login", function (req, res) {
     var DB = new Sql.DB();
     DB.select("UA00",'DEFAULT','userNO');
     DB.select("UA01",'DEFAULT','userID');
-    DB.select("UA001");
+    DB.select("UA06","DECRYPT","nickName");
+    //DB.select("UA003");
     DB.where("UA01",req.body.Account.trim(),"=","AND","ENCRYPT");
     DB.where("UA02",req.body.Password.trim(),"=","AND","HASH");
     DB.where("UA002","0");
@@ -58,14 +52,20 @@ router.post("/login", function (req, res) {
             },3).then(function(){
 				req.session._admin = {
 					userNO: resultData[0].userNO,
-					userID: resultData[0].userID
+					userID: resultData[0].userID,
+					nickName: resultData[0].nickName
 				};
+				if(require("../config/CustomerService").AccountNO==resultData[0].userNO) req.session._admin.isManger = true;
 				req.session.save();
 				res.send("success");
             },function(err){
                 console.error(err);
+                res.send("錯誤");
             });
         }
+    },function(err){
+        console.error(err);
+        res.send("錯誤");
     });
 });
 /**
@@ -110,22 +110,6 @@ router.post("/register", function (req, res) {
         res.send("密碼格式錯誤");
         return;
     }
-    if(req.body.NickName!=null){
-        let nickNameTest = req.body.NickName.length;
-        if(AccountRule.NickNameMin > nickNameTest || nickNameTest > AccountRule.NickNameMax){
-            res.send("暱稱格式錯誤");
-            return;
-        }else{
-            newData.push({
-        		key:"UA06",
-    		    value:req.body.NickName,
-    		    action:"ENCRYPT"
-    	    });
-        }
-    }else{
-        res.send("暱稱格式錯誤");
-        return;
-    }
     if(req.body.Password_RE!=null){
         let passwordReTest = req.body.Password_RE.length;
         if(AccountRule.PasswordMin > passwordReTest || passwordReTest > AccountRule.PasswordMax){
@@ -143,6 +127,22 @@ router.post("/register", function (req, res) {
         }
     }else{
         res.send("兩次密碼輸入不相同");
+        return;
+    }
+    if(req.body.NickName!=null){
+        let nickNameTest = req.body.NickName.length;
+        if(AccountRule.NickNameMin > nickNameTest || nickNameTest > AccountRule.NickNameMax){
+            res.send("暱稱格式錯誤");
+            return;
+        }else{
+            newData.push({
+        		key:"UA06",
+    		    value:req.body.NickName,
+    		    action:"ENCRYPT"
+    	    });
+        }
+    }else{
+        res.send("暱稱格式錯誤");
         return;
     }
     if(req.body.Phone!=null){
@@ -221,19 +221,17 @@ function getRouter(url) {
     var router = require('./front/' + url);
     return router;
 }
-function Render(res,login) {
+function Render(req,res) {
     res.render('layouts/front_layout', {
         Title: "首頁",
-        Login: login,
+        Login: req.session._admin==null ? null : {name:req.session._admin.nickName,no:req.session._admin.userNO},
+        isManger: req.session._admin==null ? null : req.session._admin.isManger,
         CSSs: [
         ],
         JavaScripts: [
         ],
         Include: [
             { url: "../pages/front/index", value: {} }
-        ],
-        Script: [	
-            
         ]
     });
 }
@@ -246,9 +244,6 @@ function ErrorRender(req, res) {//無畫面
         ],
         //為了傳送Value所以根目錄一樣是./views開始算
         Include: [
-            
-        ],
-        Script: [	
             
         ]
     });
