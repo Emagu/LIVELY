@@ -18,27 +18,16 @@ app.set('view engine', 'ejs');
 app.use(express_session);
 app.use(cookieParser());
 app.use('/public', express.static(__dirname + '/public'));//開放資料
-//router init
-var Router = {
-    front: getRouter("front"),
-    backStage: getRouter("backStage"),
-    message: getRouter("message")
-};
 //設定router
 app.get('/',function(req, res) {
    res.redirect('/front');
 });
-app.use('/front', Router.front);
-app.use('/backStage', Router.backStage);
-app.use('/message', Router.message);
+app.use('/front', require('./routers/front'));
+app.use('/backStage', require('./routers/backStage'));
+app.use('/message', require('./routers/message'));
 app.get('*', function(req, res){
     ErrorRender(res);
 }); 
-//method
-function getRouter(url) {
-    var router = require('./routers/' + url);
-    return router;
-}
 function ErrorRender(res) {//無畫面
     res.render('layouts/error_layout', {
         Title: "無法顯示頁面",

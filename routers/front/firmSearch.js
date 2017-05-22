@@ -13,6 +13,7 @@ router.get('/', function (req, res) {
     let db = new Sql.DB();
     db.select("F00","DEFAULT","NO");
     db.select("F02","DEFAULT","Name");
+    db.select("F06","DEFAULT","coordinate");
     //db.select("F06","DEFAULT","Coordinate");
     db.where("F001",0);
     if(req.query.keyword!=null) db.where("F02","%"+req.query.keyword+"%","LIKE");
@@ -60,9 +61,11 @@ function Render(res,req,data) {
         Login: req.session._admin==null ? null : {name:req.session._admin.nickName,no:req.session._admin.userNO},
         isManger: req.session._admin==null ? null : req.session._admin.isManger,
         CSSs: [
+            "/public/css/style.css"
         ],
         JavaScripts: [
-            "/public/js/Taiwan_Administrative_Region.js"
+            "/public/js/Taiwan_Administrative_Region.js",
+            "/public/js/jquery.hoverdir.js"
         ],
         Include: [
             { url: "../pages/front/firmSearch", value: {res:data,req:req.query} }

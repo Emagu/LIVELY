@@ -3,15 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
 const AccountLib = require("../lib/Account");
-let Router = {
-    firm: getRouter("firm"),
-    account: getRouter("account"),
-    personalInfo: getRouter("personalInfo")
-};
 router.use(bodyParser.json());       // to support JSON-encoded bodies
 router.use(bodyParser.urlencoded({
-     // to support URL-encoded bodies
-    extended: true
+    extended: true// to support URL-encoded bodies
 }));
 router.use(function(req, res, next) {//權限認證
   if(req.session._admin != null)  AccountLib.checkLoginBySession(req.session._admin).then(next,AccountLib.logout);  
@@ -20,26 +14,21 @@ router.use(function(req, res, next) {//權限認證
 router.get('/', function (req, res) {
     AccountLib.getAuthorityList(req.session._admin).then(function(data){
         req.session._admin.Authority = data;
-        req.session._admin.save();
+        req.session.save();
         Render(res,req);
     },function(err){
         console.error(err);
         AccountLib.logout();
     });
 });
-router.use('/firm', Router.firm);
-router.use('/account', Router.account);
-router.use('/personalInfo', Router.personalInfo);
-
+router.use('/firm', require('./backStage/firm'));
+router.use('/account', require('./backStage/account'));
+router.use('/personalInfo', require('./backStage/personalInfo'));
+router.use('/reply', require('./backStage/reply'));
 router.get('*', function (req, res) {//404~
     ErrorRender(res);
 });
-//method
-function getRouter(url) {
-    let router = require('./backStage/' + url);
-    return router;
-}
-function Render(res,req,authority) {
+function Render(res,req) {
     res.render('layouts/backStage_layout2', {
         Title: "管理後台",
         Login: {name:req.session._admin.nickName,no:req.session._admin.userNO},

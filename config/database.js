@@ -1,4 +1,3 @@
-
 module.exports = {
 	connectionLimit : 20,
 	host: '127.0.0.1',

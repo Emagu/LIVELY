@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 		<link rel="stylesheet" href="/public/css/w3.css">
 		<link rel="stylesheet" href="/public/css/front.css">
+		<link rel="stylesheet" href="/public/css/backStage.css">
 		<link rel="stylesheet" href="/public/js/toastr/toastr.min.css">
 		<script src="/public/js/jquery.js"></script>
 		<script src="/public/js/modernizr.custom.97074.js"></script>
@@ -112,7 +113,7 @@
 						<span id="login"><a>登入</a></span>
 						<span id="register"><a>註冊</a></span>
 					<% }else{ %>
-						<span id="backstage"><a><%= Login%></a></span>
+						<span id="backstage"><a><%= Login.name%></a></span>
 						<span id="logout"><a>登出</a></span>
 					<% } %>
 				</div>
@@ -128,7 +129,7 @@
 						<li><a href="/backStage/firm">機構管理</a></li><br/>
 					<% } %>
 					<% if(Authority.AA03!=null){ %>
-						<li><a href="">機構留言</a></li><br/>
+						<li><a href="/backStage/reply">機構留言</a></li><br/>
 					<% } %>
 					<li><a href="/backStage/personalInfo">個人資料</a></li><br/>
 					<div class="clear"></div>

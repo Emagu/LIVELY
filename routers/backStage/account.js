@@ -28,37 +28,46 @@ router.post("/getAccountTable",function(req,res){
     let pages = parseInt(req.body.pages);//所選頁數
     let sortColums = req.body.sortSetting.colums;//排列欄位設定資料
     let firstSort = req.body.sortSetting.sortColums;//最優先排列欄位名稱
-    DB.select("UserAccount.UA00", "DEFAULT", "ID");
-    DB.select("UserAccount.UA01", "DECRYPT", "Account");
-    DB.select("UserAccount.UA06", "DECRYPT", "NickName");
-    DB.select("AccountAuthority.AA01", "DEFAULT", "A_1");
-    DB.select("AccountAuthority.AA02", "DEFAULT", "A_2");
-    DB.select("AccountAuthority.AA02", "DEFAULT", "A_3");
-    if(req.body.search !=null){
-        DB.where("UserAccount.UA01","%"+req.body.search+"%","LIKE","AND","DEFAULT","DECRYPT");
-    }
-    if(firstSort != null) {
-        if (sortColums.hasOwnProperty(firstSort)){
-            let sortType = sortColums[firstSort];
-            if (sortType == 'DESC' || sortType == 'desc' || sortType == "ASC" || sortType == "asc") { 
-                DB.orderBy(firstSort, sortType);
-            }
+    DB.select("1");
+    if(req.body.search !=null && req.body.search != ""){
+        switch(req.body.searchType){
+            case "NO":
+                DB.where("UA00",req.body.search);
+                break;
+            case "Name":
+                DB.where("UserAccount.UA01","%"+req.body.search+"%","LIKE","AND","DEFAULT","DECRYPT");
+                break;
+            case "NickName":
+                DB.where("UserAccount.UA06","%"+req.body.search+"%","LIKE","AND","DEFAULT","DECRYPT");
+                break;
         }
     }
-    for (var key in sortColums) {
-        if (sortColums.hasOwnProperty(key)) {
-            let sortType = sortColums[key];
-            if ((sortType == 'DESC' || sortType == 'desc' || sortType == "ASC" || sortType == "asc") && sortType != firstSort) { 
-                DB.orderBy(key, sortType);
-            }
-        }
-    }
-    DB.limit(pages*pageLimit, pageLimit);
     DB.join("AccountAuthority","AccountAuthority.UA00=UserAccount.UA00");
-    DB.get("UserAccount").then(function (pageData) {
-        DB.select("1");
-        DB.join("AccountAuthority","AccountAuthority.UA00=UserAccount.UA00");
-        DB.get("UserAccount").then(function (countData) {
+    DB.get("UserAccount").then(function (countData) {
+        DB.select("UserAccount.UA00", "DEFAULT", "ID");
+        DB.select("UserAccount.UA01", "DECRYPT", "Account");
+        DB.select("UserAccount.UA06", "DECRYPT", "NickName");
+        DB.select("AccountAuthority.AA01", "DEFAULT", "A_1");
+        DB.select("AccountAuthority.AA02", "DEFAULT", "A_2");
+        DB.select("AccountAuthority.AA02", "DEFAULT", "A_3");
+        if(firstSort != null) {
+            if (sortColums.hasOwnProperty(firstSort)){
+                let sortType = sortColums[firstSort];
+                if (sortType == 'DESC' || sortType == 'desc' || sortType == "ASC" || sortType == "asc") { 
+                    DB.orderBy(firstSort, sortType);
+                }
+            }
+        }
+        for (var key in sortColums) {
+            if (sortColums.hasOwnProperty(key)) {
+                let sortType = sortColums[key];
+                if ((sortType == 'DESC' || sortType == 'desc' || sortType == "ASC" || sortType == "asc") && sortType != firstSort) { 
+                    DB.orderBy(key, sortType);
+                }
+            }
+        }
+        DB.limit(pages*pageLimit, pageLimit);
+        DB.get("UserAccount").then(function (pageData) {
             res.json({
                 rowsData: pageData,
                 TotalDataNum: countData.length

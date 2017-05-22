@@ -1,4 +1,9 @@
-<button onclick="location.href='/backStage/reply/unread'">未讀</button><button>已讀</button><br>
+<label>顯示類型：</label>
+<select id="table_page_type" onchange='search()'>
+    <option value="unread" selected="selected">未讀</option>
+    <option value="unreply">未回覆</option>
+    <option value="reply">已回復</option>
+</select>
 <label>單頁顯示：</label>
 <select id="table_page_size" onchange='dataTable.resizePage($("#table_page_size").val())'>
     <option value="10">10</option>
@@ -7,7 +12,7 @@
 </select>
 <label>搜尋類型：</label>
 <select id="table_search">
-    <option value="Title" selected="selected">標題</option>
+    <option value="User" selected="selected">使用者名稱</option>
     <option value="Firm">機構名稱</option>
 </select>
 <label>搜尋：</label>
@@ -27,42 +32,38 @@
                     "width": "20px"
                 },
                 action: function (value) {
-                    return "<button type='checkbox' value='"+value+"'/>";
+                    return "<input  type='checkbox' value='"+value+"'/>";
                 }
-            },
-            {
-                id: "Title",
-                title: "標題",
+            },{
+                id: "User",
+                title: "留言者",
                 sort: true,
                 style: {
-                    "width": "100px"
-                },
-                action: function (value) {
-                    return "<a href='"+value.href+"'>"+value.Name+"</a>";
+                    "width": "40px"
                 }
-            },
-            {
+            },{
                 id: "Firm",
                 title: "機構名稱",
                 sort: true,
                 style: {
                     "width": "40px"
                 }
-            },
-            {
-                id: "time",
-                title: "時間",
+            },{
+                id: "Time",
+                title: "留言時間",
                 sort: true,
                 style: {
                     "width": "50px"
                 }
-            },
-            {
-                id: "A_2",
-                title: "編輯機構權限",
-                sort: true,
+            },{
+                id: "ID_A",
+                title: "",
+                sort: false,
                 style: {
-                    "width": "50px"
+                    "width": "20px"
+                },
+                action: function (value) {
+                    return "<button onclick='replyRead("+value+")'>前往</button>";
                 }
             }
         ],
@@ -73,6 +74,23 @@
         dataTable.reGet({
             search: $("#searchBarText").val(),
             searchType: $("#table_search").val(),
+            replyType: $("#table_page_type").val()
         });
+    }
+    function replyRead(v){
+        $.post("/backStage/reply/replyRead",{
+            NO:v
+        },function(status){
+            if(status=="error"){
+                toastr.error( '',"伺服器錯誤!", {
+            		"positionClass": "toast-bottom-full-width",
+        			"timeOut": "3000",
+        			"closeButton": true
+        		});
+            }else{
+                window.open(status);
+            }
+        });
+        
     }
 </script>

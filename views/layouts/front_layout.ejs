@@ -20,8 +20,20 @@
 		<% });%>
 		<% if(Login!=null){%>
 			<script>
+				var rsid = null;
 				$(document).ready(function() {
     				$("#side_hidden_exit").click(closeMessage);
+    				$(".input_message" ).on( "keydown", function( event ) {
+						if(event.keyCode==13) {
+							if(rsid==null){
+								$(".output_message").append('<div class="user_message mine">'+$(".input_message").val()+'</div><div class="clear"></div>');
+							}else{
+								$(".output_message").append('<div class="pm_message mine">'+$(".input_message").val()+'</div><div class="clear"></div>');
+							}
+							sendMessage(rsid,$(".input_message").val());
+							$(".input_message").val("");
+						}
+					});
 				});
 				<% if(isManger){ %>
 					var hiddenMessage = [];
@@ -78,13 +90,7 @@
 					                    $(".output_message").append('<div class="pm_message mine">'+value.text+'</div><div class="clear"></div>');
 					                }
 					            });
-					            $(".input_message" ).on( "keydown", function( event ) {
-					            	if(event.keyCode==13) {
-					            		$(".output_message").append('<div class="pm_message mine">'+$(".input_message").val()+'</div><div class="clear"></div>');
-					            		sendMessage(no,$(".input_message").val());
-					            		$(".input_message").val("");
-					            	}
-					            });
+					            rsid = no;
 					            $(".side_showpeople").slideUp(null,function(){
 					                $(".side_content_pm").slideDown();
 					            });
@@ -112,14 +118,6 @@
 						                    $(".output_message").append('<div class="user_message mine">'+value.text+'</div><div class="clear"></div>');
 						                }
 						            });
-						            $(".input_message" ).on( "keydown", function( event ) {
-						            	if(event.keyCode==13) {
-						            		$(".output_message").append('<div class="user_message mine">'+$(".input_message").val()+'</div><div class="clear"></div>');
-						            		sendMessage(null,$(".input_message").val());
-						            		$(".input_message").val("");
-						            	}
-						            });
-						            
 						        }
 						        $(".side_content_pm").slideUp();
 								$(".side_showpeople").slideDown();
@@ -258,8 +256,10 @@
 							<div id="side_hidden_title_pm"></div>
 							<span onclick="openMessage()">返回</span>
 							<div class="output_message"></div>
-							<input class="input_message" value="" type="text">
+							
 						</div>
+						<div class="clear"></div>
+						<input class="input_message" value="" type="text"></input>
 					</div>
 				<% }else{ %>
 					<div class="side_hidden_pm">
@@ -271,14 +271,15 @@
 						<div id="side_hidden_title_user">
 							- 有任何問題直接留言，客服人員幫您解決 -
 						</div>
-						<div id="side_content_pm" style:"display:block">
+						<div class="side_content_user">
 							<div class="output_message">
 								<div class="pm_message">
 									您好，有甚麼我能為您服務的嗎?
 								</div>
 							</div>
-							<input class="input_message" name="m_login_account" value="" type="text">
 						</div>
+						<div class="clear"></div>
+						<input class="input_message" value="" type="text"></input>
 					</div>
 				<% } %>
 			<% } %>

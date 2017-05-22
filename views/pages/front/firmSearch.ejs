@@ -1,51 +1,259 @@
-<div class="searchBar">
-    <input type="text" id="firm_keyword" width="200px" placeholder="輸入關鍵字" />
-    <select id="firm_city"></select>
-    <select id="firm_country"></select>
-    <button onclick="search()">搜尋</button>
-    <br>
-    <div class="frqSearch"></div><!-- 搜尋排行 -->
-</div>
-<div class="selecter"><!-- 篩選器 -->
-    機構功能分類:
-        <select id="firm_type">
-            <option value='-1' selected="selected">全部</option>
-            <option value='0'>安養機構</option>
-            <option value='1'>養護機構</option>
-            <option value='2'>長期照顧中心</option>
-            <option value='3'>護理之家</option>
-        </select>
-    <br/>
-    長照2.0類型分類:
-        <select id="firm_type2">
-            <option value='-1' selected="selected">全部</option>
-            <option value='0'>A.社區整合服務中心</option>
-            <option value='1'>B.複合型日間照護中心</option>
-            <option value='2'>C.巷弄長照站</option>
-        </select>
-    <br/>
-    政府評鑑:
-        <select id="firm_level">
-            <option value='-1' selected="selected">全部</option>
-            <option value='0'>優</option>
-            <option value='1'>甲</option>
-            <option value='2'>乙</option>
-            <option value='3'>丙</option>
-        </select>
-    <br/>
-    平均價位:
-        <select id="firm_price">
-            <option value='-1' selected="selected">不限</option>
-            <option value='0'>0~20000</option>
-            <option value='1'>20001~50000</option>
-            <option value='2'>50001~100000</option>
-            <option value='3'>100001已上</option>
-        </select>
-    <br />
-</div>
-<div id="Map">
+<style>
+    .search_wrap{
+    }
+    .search_index_map{
+	    width:100%;
+		height:100%;
+		z-index:-1;
+	}
+    #search_wrap_left{
+		width:20%;
+		height:auto;
+		margin-left:5%;
+		position:fixed;
+		z-index:1;
+		margin-top:25px;
+    }
+    #search_wrap_right{
+	    width:25%;
+	    z-index:1;
+	    height:100%;
+	    margin-left:70%;
+	    margin-right:5%;
+	    margin-top:25px;
+	    position:fixed;
+    }
+    #search_wrap_right_content{
+	    width:100%;
+	    height:70%;
+	    padding-left:10px;
+	    padding-right:10px;
+	    padding-bottom:10px;
+	    overflow-y:auto;
+		background-color:rgba(255,255,255,0.9);
+		box-shadow:0px 1px 4px rgba(41, 51, 57, 0.5);
+	}
+	.search_wrap_right_item{
+		padding-top:10px;
+		padding-bottom:10px;
+		border-bottom: 2px dashed rgb(221, 221, 221);
+	}
+	#searc_wrap_right_exit img{
+		position:absolute;
+		right:0%;
+		width:10%;
+		cursor: pointer;
+	}
+	.search_index_searchbar{
+		width:auto;
+		height:auto;
+		padding:10px;
+		//border-bottom-left-radius: 8px;
+		//border-bottom-right-radius: 8px;
+		border-top-left-radius: 8px;
+		border-top-right-radius: 8px;
+		box-shadow:0px 1px 4px rgba(41, 51, 57, 0.5);
+		background: white url(images/img01.png) repeat;
+	}
+	.search_index_hiddenbox{
+		width:20%;
+		height:auto;
+		padding:10px;
+		position:fixed;
+		z-index:1;
+		background: white url(images/img01.png) repeat;
+		box-shadow:0px 1px 4px rgba(41, 51, 57, 0.5);
+		display:none;
+	}
+	.search_index_hiddenbox_classification{
+		padding-top:10px;
+		padding-bottom:10px;
+		padding-left:10px;
+		padding-right:10px;
+		border-bottom: 2px dashed rgb(221, 221, 221);
+		background-color:rgba(255,255,255,0.9);
+	}
+	.main_searchbar{
+		width:30%
+		font-size:15px;
+	}
+	.searchicon{
+		margin-left:10px;
+		width: 12%;
+		opacity:1;
+		position:absolute;
+		cursor:pointer;
+	}
+	.searchicon:hover{
+		animation: opacityto0 1s;
+		animation-iteration-count:1;
+		animation-fill-mode : both;
+	}
+	.searchicon_hover{
+		margin-left:10px;
+		width: 12%;
+		opacity:0;
+		position:absolute;
+		cursor:pointer;
+	}
+	.searchicon_hover:hover{
+		animation: opacityto1 1s;
+		animation-iteration-count:1;
+		animation-fill-mode : both;
+	}
+	@keyframes opacityto0 
+	{
+		from {opacity:1;}
+		to {opacity:0;}
+	}
+	@keyframes opacityto1
+	{
+		from {opacity:0;}
+		to {opacity:1;}
+	}
+	.div_top{
+		width:100%;
+		height:30px;
+		position:relative;
+		background: white url(images/img01.png) repeat;
+		border-top-left-radius:8px;
+		border-top-right-radius:8px;
+		box-shadow:0px 0px 4px rgba(41, 51, 57, 0.5);
+	}
+
+	.item_text1{
+		font-size: 19px;
+		font-family: '微軟正黑體';
+		letter-spacing: 2px;
+		color: black;
+		font-weight: bold;
+	}
+	.item_text2{
+		font-size: 17px;
+		font-family: '微軟正黑體';
+		letter-spacing: 2px;
+		color: #555;
+		font-weight: bold;
+	}
+	.item_text3{
+		font-size: 15px;
+		font-family: '微軟正黑體';
+		letter-spacing: 2px;
+		color: #555;
+	}
+	.item_text4{
+		font-size: 15px;
+		font-family: '微軟正黑體';
+		letter-spacing: 2px;
+		color: #99BBFF;
+		margin-left:10px;
+		margin-right:10px;
+		cursor:pointer;
+	}
+	.item_text4 a{
+		text-decoration:none;
+	}
+	.item_text_detail{
+		display:none;
+	}
+	.item_text3b{
+		color:black;
+	}
+</style>
+<div id="search_wrap">
+	<div id="search_wrap_left">
+		<div class="search_index_searchbar">
+			<input class="main_searchbar" placeholder="請輸入地址或景點:" type="text" name="" value="">
+			<img class="searchicon" src="/public/images/searchicon.png">
+			<img class="searchicon_hover" src="/public/images/searchiconhover.png">
+		</div>
+		<div class="search_index_hiddenbox">
+			<div class="search_index_hiddenbox_classification">
+				<span class="item_text3">縣市:</span>
+				<span>
+					<select id = "firm_city"></select>
+				</span>
+				<span>
+					<select id = "firm_country"></select>
+				</span>
+			</div>
+			<div class="search_index_hiddenbox_classification">
+				<span class="item_text3">機構功能分類:</span>
+				<select id="firm_type">
+                    <option value='0' selected="selected">安養機構</option>
+                    <option value='1'>養護機構</option>
+                    <option value='2'>長期照顧中心</option>
+                    <option value='3'>護理之家</option>
+                </select>
+			</div>
+			<div class="search_index_hiddenbox_classification">
+				<span class="item_text3">長照2.0類型分類:</span>
+				<span>
+                    <select id="firm_type2">
+                        <option value='0' selected="selected">A.社區整合服務中心</option>
+                        <option value='1'>B.複合型日間照護中心</option>
+                        <option value='2'>C.巷弄長照站</option>
+                    </select>
+				</span>
+			</div>
+			<div class="search_index_hiddenbox_classification">
+				<span class="item_text3">政府評鑑:</span>
+				<span>
+                    <select id="firm_level">
+                        <option value='0' selected="selected">優</option>
+                        <option value='1'>甲</option>
+                        <option value='2'>乙</option>
+                        <option value='3'>丙</option>
+                    </select>
+				</span>
+			</div>
+			<div class="search_index_hiddenbox_classification">
+				<span class="item_text3">平均價位:</span>
+				<span>
+    				<select id="firm_price">
+                        <option value='-1' selected="selected">不限</option>
+                        <option value='0'>0~20000</option>
+                        <option value='1'>20001~50000</option>
+                        <option value='2'>50001~100000</option>
+                        <option value='3'>100001已上</option>
+                    </select>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div id="search_wrap_right">
+		<div class="div_top">
+			<div id="searc_wrap_right_exit">
+		        <img id="search_wrap_right_exit_pic" src="/public/images/exit.png">
+		    </div>
+		</div>
+		<div id="search_wrap_right_content">
+		    <% value.res.forEach(function(val){ %>
+		        <div class="search_wrap_right_item">
+    				<div class="item_text2"><%= val.Name%></div>
+    				<div class="item_text_detail" id="firm_item_detail_<%= val.NO%>">
+    					<div class="item_text3">詳細內容詳細內容詳細內容詳細內容詳細內容</div>
+    					<div class="item_text3">詳細內容詳細內容詳細內容詳細內容詳細內容</div>
+    					<div class="item_text3">詳細內容詳細內容詳細內容詳細內容詳細內容</div>
+    				</div>
+    				<Center><span onclick="showDetail(<%=val.NO%>)" class="item_text4">點我詳細</span><span class="item_text4"><a href="/front/firm?NO=<%= val.NO%>">GO</a></span></Center>
+    			</div>
+		    <% }); %>
+		</div>
+	</div>
+	<div class="search_index_map">
+	    <div id="map" style="width: 100%; height: 500px"></div>
+	</div>
+	<div class="clear"></div>
+	<div class="color_div"></div>
 </div>
 <script>
+    var map = null;
+    var markers = [];
+    var gL = ["優","甲","乙","丙"];
+    function showDetail(id){
+        $("#firm_item_detail_"+id).slideToggle("slow");
+    }
     $(document).ready(function(){
         //縣市選擇
         $("#firm_city").append("<option value='-1'>不限</option>");
@@ -72,11 +280,17 @@
         <% if(value.req.ctry!=null){ %>
             $("#firm_country").val(<%= value.req.ctry%>).change();
         <% } %>
-        <% value.res.forEach(function(val){ %>
-            console.log('<%= val.NO%>');
-            console.log('<%= val.Name%>');
-        <% }); %>
+        
+		$("#search_wrap_right_exit_pic").click(function(){
+		    $("#search_wrap_right_content").slideToggle("slow");
+        });
+        $(".main_searchbar").click(function(){
+	   		$(".search_index_hiddenbox").slideToggle("slow");
+	   	});
     });
+    $(function() {
+		$(' #da-thumbs > li ').each( function() { $(this).hoverdir(); } );
+	});
     function search(){
         location.href = "/front/firmSearch?city=" + $("#firm_city").val()
                       + "&ctry=" + $("#firm_country").val()
@@ -86,4 +300,31 @@
                       + "&level=" + $("#firm_level").val()
                       + "&price=" + $("#firm_price").val()
     }
+    function initMap() {
+		//經緯度
+		<% 
+		   if(value.res!=null){
+		       if(value.res[0]!=null){%>
+		          var center = JSON.parse(decodeURIComponent('<%= value.res[0].coordinate %>'));
+		       <%}else{%>
+		          var center = {lat: 25.0439892, lng: 121.5212213};
+		       <%}
+		   }
+		%>
+		//center:地圖中心(經緯度)、zoom:縮放(數值越大可看到路名)
+		map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 18,
+			center: center
+		});
+		<% value.res.forEach(function(val){ %>
+		    //紅色小指
+		    //var image = '紅色小指標圖檔放置位置';
+            markers[<%= val.NO%>] = new google.maps.Marker({
+    			position: JSON.parse(decodeURIComponent('<%= val.coordinate %>')),
+    			draggable: false,
+    			map: map
+    		});
+        <% }); %>
+	}
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb-vpPQsO-4-jBiSPMK8_EAEKTCo0XwZo&callback=initMap"></script>

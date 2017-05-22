@@ -361,29 +361,26 @@ html{-webkit-text-size-adjust: none;}
 		cursor:pointer;
 	}
 	.side_content_pm{
-		position:absolute;
+		position:relative;
 		width:100%;
-		height: 90%;
+		height: 70%;
 		z-index:1003;
-		display:none;
-		overflow:auto;
+		overflow-y: auto;
 	}
 	.side_content_user{
-		position:absolute;
+		position:relative;
 		width:100%;
-		height: 90%;
+		height: 70%;
 		z-index:1003;
-		overflow:auto;
+		overflow-y: auto;
 	}
 	.input_message{
 		width: 100%;
 		position: absolute;
 		height: 10%;
-		bottom: 0%;
 		font-size: 15px;
-		
+		margin-bottom:0%;
 	}
-
 	.container {
 		width: 100%;
 		margin-left: auto;

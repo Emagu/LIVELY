@@ -1,4 +1,5 @@
 政府登記編號:<input type="text" id="firm_no" value="<%= value.no%>"/><br/>
+機構首頁圖:<input id="title_img" type="file" accept="image/*"></input><br/>
 名稱:<input type="text" id="firm_title" value="<%= value.title%>"/><br/>
 地址(縣市):<select id="firm_city"></select><br/>
 地址(鄉鎮):<select id="firm_country"></select><br/>
@@ -27,11 +28,19 @@
         <option value='2'>乙</option>
         <option value='3'>丙</option>
     </select>
+<br />
+平均價位:<input type="text" id="firm_price" value="<%= value.price%>" />
+<div style="position:absolute;right: 0;top:0;">
+    <div id="map" style="width: 350px; height: 200px"></div>
+</div>
 <br/>
-平均價位:<input type="text" id="firm_price" value="<%= value.price%>" /><br />
 <textarea id="editer_area"></textarea>
 <button onclick="preview()">預覽</button><br />
 <script>
+    
+    var map = null;
+    var geocoder = null;
+    var marker = null;
     $(document).ready(function(){
         $("#editer_area").html(decodeURIComponent("<%= value.html%>"));
         editerInit();
@@ -45,7 +54,10 @@
             TAR.getCountrys($("#firm_city").val()).forEach(function(countryValue,index){
                 $("#firm_country").append("<option value='"+index+"'>"+countryValue+"</option>");
             });
+            geocodeAddress();
         });
+        $("#firm_country").change(geocodeAddress);
+        $("#firm_address").change(geocodeAddress);
         //預設值
         <% if(value.city!=null){ %>
             $("#firm_city").val(<%= value.city%>).change();
@@ -66,6 +78,9 @@
         <% if(value.level!=null){ %>
             $("#firm_level").val(<%= value.level%>).change();
         <% } %>
+        <% if(value.coordinate!=null){ %>
+		    marker.setPosition(JSON.parse(decodeURIComponent("<%= value.coordinate %>")));
+		<% } %>
     });
     function editerInit(){
         tinymce.init({
@@ -78,7 +93,7 @@
                 'insertdatetime media table contextmenu paste code'
             ],
             automatic_uploads: true,
-            images_upload_url: '/firmManger/uploadNewsImage',
+            images_upload_url: '/backStage/firm/uploadNewsImage',
             file_picker_types: 'image', 
             file_picker_callback: function(cb, value, meta) {
                 var input = document.createElement('input');
@@ -100,21 +115,82 @@
             content_css: '//www.tinymce.com/css/codepen.min.css'
         });
     }
-    function preview() {
-        var html = encodeURIComponent(encodeURIComponent(tinymce.activeEditor.getContent()));
-        location.href = "./preview?" + "title=" + $("#firm_title").val()
-            + "&no=" + $("#firm_no").val()
-            + "&city=" + $("#firm_city").val()
-            + "&ctry=" + $("#firm_country").val()
-            + "&addr=" + $("#firm_address").val()
-            + "&phone=" + $("#firm_phone").val()
-            + "&fax=" + $("#firm_fax").val()
-            + "&type=" + $("#firm_type").val()
-            + "&type2=" + $("#firm_type2").val()
-            + "&level=" + $("#firm_level").val()
-            + "&price=" + $("#firm_price").val()
-            + "&html=" + html
-            + "&action=<%= value.action%>";
-    }
     
+    function preview() {
+        var formData = new FormData();
+        var file = $("#title_img")[0].files[0];
+        formData.append("file", file,$("#firm_no").val()+".jpg");
+        formData.append("upload_file", true);
+        $.ajax({
+            type: "POST",
+            url: "/backStage/firm/uploadNewsImage",
+            success: function (data) {
+                var html = encodeURIComponent(encodeURIComponent(tinymce.activeEditor.getContent()));
+                location.href = "./preview?" + "title=" + $("#firm_title").val()
+                    + "&no=" + $("#firm_no").val()
+                    + "&city=" + $("#firm_city").val()
+                    + "&ctry=" + $("#firm_country").val()
+                    + "&addr=" + $("#firm_address").val()
+                    + "&phone=" + $("#firm_phone").val()
+                    + "&fax=" + $("#firm_fax").val()
+                    + "&type=" + $("#firm_type").val()
+                    + "&type2=" + $("#firm_type2").val()
+                    + "&level=" + $("#firm_level").val()
+                    + "&price=" + $("#firm_price").val()
+                    + "&coordinate=" + encodeURIComponent(encodeURIComponent(JSON.stringify(marker.getPosition().toJSON())))
+                    + "&html=" + html
+                    + "&action=<%= value.action%>"<% if(value.id){%> + "&id=<%= value.id %>"<% } %>;
+            },
+            error: function (error) {
+                toastr.error('', error, {
+                        "positionClass": "toast-bottom-full-width",
+                        "timeOut": "3000",
+                        "closeButton": true
+                    });
+            },
+            async: true,
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            timeout: 60000
+        });
+        
+    }
+    function geocodeAddress() {
+        var address = "";
+        address+=TAR.getCity($("#firm_city").val());
+        address+=TAR.getCountry($("#firm_city").val(),$("#firm_country").val());
+        address+=$("#firm_address").val();
+        geocoder.geocode({'address': address}, function(results, status) {
+            if (status === 'OK') {
+                map.setCenter(results[0].geometry.location);
+                marker.setPosition(results[0].geometry.location);
+            } else {
+                alert('地址定位錯誤!錯誤碼: ' + status);
+            }
+        });
+    }
+    function initMap() {
+		//經緯度
+		<% if(value.coordinate!=null){ %>
+		    var myLatLng = JSON.parse(decodeURIComponent("<%= value.coordinate %>")); 
+		<% }else{ %>
+		    var myLatLng = {lat: 25.0439892, lng: 121.5212213}; 
+		<% } %>
+		//center:地圖中心(經緯度)、zoom:縮放(數值越大可看到路名)
+		map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 18,
+			center: myLatLng
+		});
+		geocoder = new google.maps.Geocoder();
+		//紅色小指標
+		//var image = '紅色小指標圖檔放置位置';
+		marker = new google.maps.Marker({
+			position: myLatLng,
+			draggable: true,
+			map: map
+		});
+	}
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb-vpPQsO-4-jBiSPMK8_EAEKTCo0XwZo&callback=initMap"></script>

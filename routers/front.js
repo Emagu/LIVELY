@@ -148,14 +148,14 @@ router.post("/register", function (req, res) {
     if(req.body.Phone!=null){
         let PhoneTest = req.body.Phone;
         if(AccountRule.PhoneRegularize.test(PhoneTest)){
-            res.send("手機格式錯誤");
-            return;
-        }else{
             newData.push({
         		key:"UA03",
     		    value:req.body.Phone,
     		    action:"ENCRYPT"
     	    });
+        }else{
+    	    res.send("手機格式錯誤");
+            return;
         }
     }else{
         res.send("手機格式錯誤");

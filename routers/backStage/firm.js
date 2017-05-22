@@ -39,6 +39,7 @@ router.get('/firmEdit', function(req,res){
             break;
         case '1':
             let DB = new SQL.DB();
+            DB.select("F00","DEFAULT","id");
             DB.select("F01","DECRYPT","no");
             DB.select("F02","DEFAULT","title");
             DB.select("F03A","DEFAULT","city");
@@ -46,6 +47,7 @@ router.get('/firmEdit', function(req,res){
             DB.select("F03C","DECRYPT","addr");
             DB.select("F04","DECRYPT","phone");
             DB.select("F05","DECRYPT","fax");
+            DB.select("F06","DEFAULT","coordinate");
             DB.select("F07","DEFAULT","type");
             DB.select("F08","DEFAULT","type2");
             DB.select("F09","DEFAULT","level");
@@ -104,6 +106,9 @@ router.post('/editSumit',function(req,res){
                 value: req.body.fax,
                 action: "ENCRYPT"
             },{
+                key: "F06",
+                value: req.body.coordinate
+            },{
                 key: "F07",
                 value: req.body.type
             },{
@@ -137,6 +142,7 @@ router.post('/editSumit',function(req,res){
             });
             break;
         case '1':
+            db.where("F00",req.body.id);
             db.update([{
                 key: "F01",
                 value: req.body.no,
@@ -162,6 +168,9 @@ router.post('/editSumit',function(req,res){
                 key: "F05",
                 value: req.body.fax,
                 action: "ENCRYPT"
+            },{
+                key: "F06",
+                value: req.body.coordinate
             },{
                 key: "F07",
                 value: req.body.type
@@ -201,17 +210,20 @@ router.post('/editSumit',function(req,res){
 });
 router.post('/uploadNewsImage',function(req, res) {
     let fstream;
-    req.pipe(req.busboy);
-    req.busboy.on('file', function (fieldname, file, filename) {
-        console.log("Uploading: " + filename);    
-        //Path where image will be uploaded
-        fstream = fs.createWriteStream(__dirname + '/../public/images/firm/' + filename);
-        file.pipe(fstream);
-        fstream.on('close', function () {
-            console.log("Upload Finished of " + filename);
-            res.json({ location: '/public/images/firm/' + filename});
+    if(req.busboy!=null){
+        req.pipe(req.busboy);
+        req.busboy.on('file', function (fieldname, file, filename) {
+            console.log("Uploading: " + filename);    
+            //Path where image will be uploaded
+            fstream = fs.createWriteStream(__dirname+'/../../public/images/firm/' + filename);
+            file.pipe(fstream);
+            fstream.on('close', function () {
+                console.log("Upload Finished of " + filename);
+                res.json({ location: '/public/images/firm/' + filename});
+            });
         });
-    });
+    }
+    
 });
 router.post('/deleteFirm',function(req, res) {
     var db = new SQL.DB();
@@ -251,6 +263,7 @@ function EditRender(res,req,firm) {
         Title: "機構管理-機構編輯",
         Login: req.session._admin.nickName,
         Authority: req.session._admin.Authority,
+        isManger: req.session._admin.isManger,
         CSSs: [
         ],
         JavaScripts: [
@@ -266,6 +279,7 @@ function PreviewRender(res,req,firm){
     res.render('layouts/front_layout', {
         Title: firm.title,
         Login: req.session._admin.nickName,
+        isManger: true,
         CSSs: [
             "/public/css/firm.css"
         ],

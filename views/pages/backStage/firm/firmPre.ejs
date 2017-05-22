@@ -19,7 +19,7 @@
 							<dt><font class="item_text1">平均價位:</font></dt><dd><font class="item_text3b"><%= value.price %></font></dd>
 						</dl>
 					</div>
-					<div class="search_item_pic"><img src="/public/images/example.jpg"></div>
+					<div class="search_item_pic"><img src="/public/images/firm/<%= value.no%>.jpg"></div>
 					<div class="clear"></div>
 					<div class="search_item_textdiv"><font class="item_text2">其他相關資訊:</font></div>
 					<div class="search_item_textdiv"><font class="item_text2">傳真:</font><font class="item_text3"><%= value.fax %></font></div>
@@ -102,8 +102,10 @@
             type2: "<%= value.type2%>",
             level: "<%= value.level%>",
             price: "<%= value.price%>",
+            coordinate: "<%= value.coordinate%>",
             html: "<%=value.html%>",
-            action: '<%= value.action%>'
+            action: '<%= value.action%>',
+            <% if(value.id !=null){%> id:<%=value.id%> <% } %>
         }, function (status) {
             if (status == "success") location.href = "./";
         });
